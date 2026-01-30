@@ -8,14 +8,12 @@ from typing import Iterable
 
 _BANNED_PHRASES = (
     "you should",
-    "the best approach",
     "i recommend",
+    "best approach",
     "next step",
     "do this",
-    "you must",
     "you need to",
-    "i suggest",
-    "i advise",
+    "i suggest you",
 )
 
 _IMPERATIVE_STARTS = (
