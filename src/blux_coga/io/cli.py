@@ -14,7 +14,7 @@ def main() -> None:
             break
         response = thinker.respond(user_input)
         print(response.text)
-        if thinker.state.stopped:
+        if thinker.state.stopped or thinker.state.frozen:
             break
 
 
