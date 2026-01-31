@@ -48,3 +48,5 @@ pytest
 - `docs/DETERMINISM.md`
 - `docs/BOUNDARIES.md`
 - `docs/PLATFORMS.md`
+- `docs/REASONING_PACKS.md`
+- `docs/ACCEPTANCE.md`
