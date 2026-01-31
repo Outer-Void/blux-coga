@@ -11,6 +11,7 @@ from blux_coga.contracts.determinism import stable_json_dumps
 from blux_coga.contracts.models import ProblemSpec
 from blux_coga.core.thinker import CogAThinker
 from blux_coga.io.acceptance import run_acceptance
+from blux_coga.profiles import load_profile_by_id, load_profile_from_path
 
 
 def main() -> None:
@@ -37,16 +38,31 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run CogA contract processing.")
     parser.add_argument(
         "--input",
+        "--in",
         "-i",
+        dest="input",
         type=Path,
         help="Path to a ProblemSpec JSON file.",
     )
     parser.add_argument(
         "--output-dir",
+        "--out",
         "-o",
+        dest="output_dir",
         type=Path,
         default=Path("out"),
         help="Directory for contract outputs.",
+    )
+    profile_group = parser.add_mutually_exclusive_group()
+    profile_group.add_argument(
+        "--profile",
+        type=str,
+        help="Profile id from profiles/ (e.g. cpu, gpu).",
+    )
+    profile_group.add_argument(
+        "--profile-file",
+        type=Path,
+        help="Path to a profile JSON file.",
     )
     parser.add_argument(
         "--interactive",
@@ -55,11 +71,17 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    profile = None
+    if args.profile_file:
+        profile = load_profile_from_path(args.profile_file)
+    elif args.profile:
+        profile = load_profile_by_id(args.profile)
+
     output_dir: Path = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if args.interactive:
-        thinker = CogAThinker()
+        thinker = CogAThinker(profile=profile)
         while True:
             try:
                 user_input = input("> ")
@@ -82,7 +104,7 @@ def main() -> None:
 
     payload = json.loads(args.input.read_text(encoding="utf-8"))
     problem_spec = ProblemSpec.from_dict(payload)
-    thinker = CogAThinker(problem_spec.to_session_state())
+    thinker = CogAThinker(problem_spec.to_session_state(), profile=profile)
     artifact, verdict = thinker.respond(problem_spec.user_input)
     (output_dir / "thought_artifact.json").write_text(
         stable_json_dumps(artifact.to_dict()), encoding="utf-8"

@@ -92,6 +92,8 @@ class RunHeader:
     reasoning_pack_id: str
     reasoning_pack_version: str
     schema_version: str
+    profile_id: Optional[str] = None
+    profile_version: Optional[str] = None
 
     @classmethod
     def from_dict(cls, payload: Dict[str, Any]) -> "RunHeader":
@@ -102,10 +104,12 @@ class RunHeader:
             reasoning_pack_id=payload.get("reasoning_pack_id", "unknown"),
             reasoning_pack_version=payload.get("reasoning_pack_version", "unknown"),
             schema_version=payload.get("schema_version", "unknown"),
+            profile_id=payload.get("profile_id"),
+            profile_version=payload.get("profile_version"),
         )
 
     def to_dict(self) -> Dict[str, str]:
-        return {
+        payload: Dict[str, str] = {
             "input_hash": self.input_hash,
             "contract_version": self.contract_version,
             "model_version": self.model_version,
@@ -113,6 +117,11 @@ class RunHeader:
             "reasoning_pack_version": self.reasoning_pack_version,
             "schema_version": self.schema_version,
         }
+        if self.profile_id is not None:
+            payload["profile_id"] = self.profile_id
+        if self.profile_version is not None:
+            payload["profile_version"] = self.profile_version
+        return payload
 
 
 @dataclass(frozen=True)

@@ -19,7 +19,20 @@ outputs are emitted as structured JSON artifacts rather than free-form text.
 
 ## Usage
 
-Create a JSON `ProblemSpec` (see `schemas/problem.schema.json`) and run:
+Create a JSON `ProblemSpec` (see `schemas/problem.schema.json`) and run via the
+root runner scripts:
+
+```bash
+./CogA.sh --in path/to/problem.json --out out/
+```
+
+To select a deterministic profile:
+
+```bash
+./CogA.sh --profile cpu --in path/to/problem.json --out out/
+```
+
+You can also call the CLI directly:
 
 ```bash
 blux-coga --input path/to/problem.json --output-dir out

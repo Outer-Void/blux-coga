@@ -1,0 +1,9 @@
+{
+  "profile_id": "cpu",
+  "profile_version": "1.0",
+  "device": "cpu",
+  "deterministic": {
+    "seed": 0,
+    "max_steps": 256
+  }
+}
