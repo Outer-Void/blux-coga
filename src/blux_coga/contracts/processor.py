@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import re
@@ -14,13 +15,20 @@ from blux_coga.contracts.models import (
     Delta,
     Option,
     ProblemSpec,
+    Refusal,
     ReasoningVerdict,
     RunHeader,
     ThoughtArtifact,
     VerdictStatus,
 )
+from blux_coga.contracts.reasoning_packs import load_reasoning_pack
 from blux_coga.core.boundaries import has_violation, enforce
-from blux_coga.core.constants import CONTRACT_VERSION, MODEL_VERSION
+from blux_coga.core.constants import (
+    CONTRACT_VERSION,
+    DEFAULT_REASONING_PACK_ID,
+    MODEL_VERSION,
+    SCHEMA_VERSION,
+)
 from blux_coga.core.state import SessionState
 from blux_coga.dialogue import engine
 from blux_coga.dialogue.reflection import build_clarification, build_reflection
@@ -41,6 +49,7 @@ def _base_flags(state: SessionState) -> Dict[str, bool]:
         "short_or_vague": False,
         "ambiguous": False,
         "contradiction": False,
+        "refuse_signal": False,
         "stopped_state": state.stopped,
         "frozen_state": state.frozen,
     }
@@ -50,7 +59,13 @@ def _artifact_from_state(
     run_header: RunHeader,
     user_input: str,
     state: SessionState,
-) -> Tuple[ThoughtArtifact, VerdictStatus, Optional[str], Dict[str, bool]]:
+) -> Tuple[
+    ThoughtArtifact,
+    VerdictStatus,
+    Optional[str],
+    Dict[str, bool],
+    Optional[Refusal],
+]:
     flags = _base_flags(state)
     reflection = ""
     clarifications: List[str] = []
@@ -61,6 +76,7 @@ def _artifact_from_state(
     acknowledgment: Optional[str] = None
     summary: Optional[str] = None
     response_text = ""
+    refusal: Optional[Refusal] = None
 
     if state.frozen:
         options, comparison = _build_options_and_comparison(user_input)
@@ -77,7 +93,7 @@ def _artifact_from_state(
             summary=summary,
             response_text=response_text,
         )
-        return artifact, VerdictStatus.COMPLETE, None, flags
+        return artifact, VerdictStatus.COMPLETE, None, flags, refusal
 
     if engine._is_freeze(user_input):
         flags["freeze_signal"] = True
@@ -101,7 +117,7 @@ def _artifact_from_state(
             summary=summary,
             response_text=response_text,
         )
-        return artifact, VerdictStatus.COMPLETE, None, flags
+        return artifact, VerdictStatus.COMPLETE, None, flags, refusal
 
     if engine._is_stop(user_input):
         flags["stop_signal"] = True
@@ -123,7 +139,7 @@ def _artifact_from_state(
             summary=summary,
             response_text=response_text,
         )
-        return artifact, VerdictStatus.COMPLETE, None, flags
+        return artifact, VerdictStatus.COMPLETE, None, flags, refusal
 
     if engine._is_summarize(user_input):
         flags["summarize_signal"] = True
@@ -147,7 +163,28 @@ def _artifact_from_state(
             summary=summary,
             response_text=response_text,
         )
-        return artifact, VerdictStatus.COMPLETE, None, flags
+        return artifact, VerdictStatus.COMPLETE, None, flags, refusal
+
+    refusal_result = _should_refuse(user_input)
+    if refusal_result:
+        refusal, delta_message = refusal_result
+        flags["refuse_signal"] = True
+        response_text = "Unable to proceed with that request."
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
+            run_header=run_header,
+            reflection=reflection,
+            clarifications=clarifications,
+            observations=observations,
+            flags=flags,
+            contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
+            acknowledgment=acknowledgment,
+            summary=summary,
+            response_text=response_text,
+        )
+        return artifact, VerdictStatus.REFUSE, delta_message, flags, refusal
 
     contradiction = engine._detect_contradiction(
         user_input, state.last_user_utterances[:-1]
@@ -183,8 +220,9 @@ def _artifact_from_state(
         return (
             artifact,
             VerdictStatus.UNCLEAR,
-            "clarification_needed: resolve_conflict_between_statements",
+            "clarification_needed: resolve_contradiction",
             flags,
+            refusal,
         )
 
     intent = engine._resolve_intent(user_input, state)
@@ -222,11 +260,12 @@ def _artifact_from_state(
         return (
             artifact,
             VerdictStatus.UNCLEAR,
-            "clarification_needed: add_specific_detail",
+            None,
             flags,
+            refusal,
         )
 
-    return artifact, VerdictStatus.COMPLETE, None, flags
+    return artifact, VerdictStatus.COMPLETE, None, flags, refusal
 
 
 def _check_non_directive(artifact: ThoughtArtifact) -> Check:
@@ -287,25 +326,31 @@ def _check_contradiction(flags: Dict[str, bool]) -> Check:
 def run_contract(
     problem_spec: ProblemSpec,
 ) -> Tuple[ThoughtArtifact, ReasoningVerdict, SessionState]:
+    reasoning_pack = _load_reasoning_pack()
     run_header = RunHeader(
         input_hash=stable_hash(problem_spec),
         contract_version=CONTRACT_VERSION,
         model_version=MODEL_VERSION,
+        reasoning_pack_id=reasoning_pack.pack_id,
+        reasoning_pack_version=reasoning_pack.version,
+        schema_version=SCHEMA_VERSION,
     )
     state = problem_spec.to_session_state()
     user_input = problem_spec.user_input
 
     if state.frozen:
-        artifact, status, delta_message, flags = _artifact_from_state(
+        artifact, status, delta_message, flags, refusal = _artifact_from_state(
             run_header, user_input, state
         )
-        verdict = _build_verdict(run_header, status, delta_message, flags, artifact)
+        verdict = _build_verdict(
+            run_header, status, delta_message, flags, artifact, refusal
+        )
         return artifact, verdict, state
 
     state.add_turn("user", user_input)
     state.add_user_utterance(user_input)
 
-    artifact, status, delta_message, flags = _artifact_from_state(
+    artifact, status, delta_message, flags, refusal = _artifact_from_state(
         run_header, user_input, state
     )
 
@@ -314,7 +359,9 @@ def run_contract(
         state.last_intent = user_input
         state.extracted_intent = user_input
 
-    verdict = _build_verdict(run_header, status, delta_message, flags, artifact)
+    verdict = _build_verdict(
+        run_header, status, delta_message, flags, artifact, refusal
+    )
     return artifact, verdict, state
 
 
@@ -324,6 +371,7 @@ def _build_verdict(
     delta_message: Optional[str],
     flags: Dict[str, bool],
     artifact: ThoughtArtifact,
+    refusal: Optional[Refusal],
 ) -> ReasoningVerdict:
     checks = [
         _check_non_directive(artifact),
@@ -332,18 +380,26 @@ def _build_verdict(
         _check_ambiguity(flags),
         _check_contradiction(flags),
     ]
+    refusal_check = _check_refusal_reason(refusal)
+    if refusal_check:
+        checks.append(refusal_check)
     delta = None
-    if status in (VerdictStatus.UNCLEAR, VerdictStatus.REFUSE):
+    if status == VerdictStatus.UNCLEAR:
         delta = Delta(
             minimal_change=_sanitize_delta(
-                delta_message or "clarification_needed: provide_minimal_context"
+                delta_message
+                or _select_unclear_delta(flags)
+                or "clarification_needed: provide_minimal_context"
             )
         )
+    if status == VerdictStatus.REFUSE and delta_message:
+        delta = Delta(minimal_change=_sanitize_delta(delta_message))
     return ReasoningVerdict(
         run_header=run_header,
         status=status,
         checks=checks,
         delta=delta,
+        refusal=refusal,
     )
 
 
@@ -395,8 +451,12 @@ def _make_artifact(
     response_text: str,
 ) -> ThoughtArtifact:
     safe_reflection = _sanitize_text(reflection, "")
-    safe_clarifications = _sanitize_list(clarifications)
-    safe_observations = _sanitize_list(observations)
+    safe_clarifications = _limit_list(
+        _sanitize_list(clarifications), limit_key="clarifications"
+    )
+    safe_observations = _limit_list(
+        _sanitize_list(observations), limit_key="observations"
+    )
     safe_contradiction = _sanitize_contradiction(contradiction)
     safe_ack = _sanitize_optional(acknowledgment, None)
     safe_summary = _sanitize_optional(summary, None)
@@ -419,6 +479,18 @@ def _make_artifact(
         summary=safe_summary,
         response_text=safe_response,
     )
+
+
+def _limit_list(items: List[str], limit_key: str) -> List[str]:
+    from blux_coga.core.constants import MAX_CLARIFICATIONS, MAX_OBSERVATIONS
+
+    if limit_key == "clarifications":
+        limit = MAX_CLARIFICATIONS
+    elif limit_key == "observations":
+        limit = MAX_OBSERVATIONS
+    else:
+        limit = len(items)
+    return items[:limit]
 
 
 def _sanitize_options(options: List[Option]) -> List[Option]:
@@ -464,6 +536,7 @@ def _build_options_and_comparison(
     titles = _extract_option_titles(user_input)
     if len(titles) < 2:
         return [], None
+    titles = _limit_option_titles(titles)
     options: List[Option] = []
     for index, title in enumerate(titles, start=1):
         option_id = f"option-{index}"
@@ -496,3 +569,67 @@ def _extract_option_titles(user_input: str) -> List[str]:
             cleaned.append(stripped)
             seen.add(stripped)
     return cleaned
+
+
+def _limit_option_titles(titles: List[str]) -> List[str]:
+    from blux_coga.core.constants import MAX_OPTIONS
+
+    if len(titles) <= MAX_OPTIONS:
+        return titles
+    keyed = [
+        (_normalize_option_title(title), index, title)
+        for index, title in enumerate(titles)
+    ]
+    keyed.sort(key=lambda item: (item[0], item[1]))
+    limited = [title for _norm, _idx, title in keyed[:MAX_OPTIONS]]
+    return limited
+
+
+def _normalize_option_title(title: str) -> str:
+    return re.sub(r"[^\w\s]", "", title.lower()).strip()
+
+
+def _select_unclear_delta(flags: Dict[str, bool]) -> Optional[str]:
+    if flags.get("contradiction"):
+        return "clarification_needed: resolve_contradiction"
+    if flags.get("short_or_vague"):
+        return "clarification_needed: add_specific_detail"
+    if flags.get("ambiguous"):
+        return "clarification_needed: disambiguate_request"
+    return None
+
+
+def _check_refusal_reason(refusal: Optional[Refusal]) -> Optional[Check]:
+    if not refusal:
+        return None
+    return Check(
+        id="refusal_reason",
+        status="PASS",
+        message="Refusal recorded.",
+    )
+
+
+def _should_refuse(user_input: str) -> Optional[tuple[Refusal, Optional[str]]]:
+    lowered = user_input.lower()
+    if "override" in lowered and "boundary" in lowered:
+        return (
+            Refusal(
+                category="boundary_override",
+                detail="request_conflicts_with_non_directive_boundary",
+            ),
+            None,
+        )
+    if "bypass" in lowered and "safety" in lowered:
+        return (
+            Refusal(
+                category="safety_bypass",
+                detail="request_conflicts_with_safety_constraints",
+            ),
+            None,
+        )
+    return None
+
+
+def _load_reasoning_pack():
+    packs_dir = Path(__file__).resolve().parents[3] / "reasoning_packs"
+    return load_reasoning_pack(DEFAULT_REASONING_PACK_ID, packs_dir)

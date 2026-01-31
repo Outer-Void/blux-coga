@@ -5,7 +5,18 @@ from blux_coga.io.acceptance import run_acceptance
 
 
 def _write_fixture(path: Path, user_input: str) -> None:
-    payload = {"user_input": user_input, "session": {}}
+    payload = {
+        "user_input": user_input,
+        "session": {
+            "history": [],
+            "last_user_utterances": [],
+            "last_intent": None,
+            "extracted_intent": None,
+            "extracted_constraints": [],
+            "stopped": False,
+            "frozen": False,
+        },
+    }
     path.write_text(stable_json_dumps(payload), encoding="utf-8")
 
 

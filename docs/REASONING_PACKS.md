@@ -1,9 +1,9 @@
-## Reasoning Packs (Phase 3)
+## Reasoning Packs (Phase 5)
 
-Phase 3 introduces multi-option reasoning artifacts that remain deterministic
-and non-directive. Thought artifacts now include stable-ordered option lists and
-an optional comparison matrix to summarize option attributes without prescribing
-an outcome.
+Reasoning packs are local, deterministic bundles that label the reasoning
+configuration used to generate each verdict. Packs are stored in
+`reasoning_packs/` and loaded offline by id and version. The selected pack id
+and version are recorded in each `run_header`.
 
 ### Tag notes (model stepping)
 
@@ -14,3 +14,16 @@ an outcome.
 - **CogA-0.4-mini**: Introduced deterministic, structured UNCLEAR deltas and
   acceptance fixture scaffolding.
 - **CogA-0.4**: Finalized the acceptance harness outputs and determinism tests.
+- **CogA-0.5-mini**: Added deterministic reasoning pack identifiers.
+- **CogA-0.5**: Recorded pack id/version in `run_header`.
+- **CogA-0.6-mini**: Introduced bounded depth and deterministic tie-breaking.
+- **CogA-0.6**: Stabilized minimal clarification selection for UNCLEAR deltas.
+- **CogA-0.7-mini**: Added compatibility headers.
+- **CogA-0.7**: Added compatibility docs and tests.
+- **CogA-0.8-mini**: Integrated dataset coupling hooks in the acceptance harness.
+- **CogA-0.8**: Documented fixture update discipline for version bumps.
+- **CogA-0.9-mini**: Added release documentation scaffolding.
+- **CogA-0.9**: Documented platform runbooks.
+- **CogA-1.0-mini**: Locked schema/contract headers.
+- **CogA-1.0**: Finalized determinism and compatibility matrices.
+- **CogA-1.0-pro**: Added PRO capability notes.

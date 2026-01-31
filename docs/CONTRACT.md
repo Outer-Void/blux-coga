@@ -1,6 +1,6 @@
-## CogA Contract (Phase 4)
+## CogA Contract (Phase 10)
 
-CogA-0.4 produces deterministic, schema-validated artifacts for each turn. The
+CogA-1.0 produces deterministic, schema-validated artifacts for each turn. The
 contract consists of a single input type (`ProblemSpec`) and two output types:
 `ThoughtArtifact` and `ReasoningVerdict`.
 
@@ -18,6 +18,9 @@ contract consists of a single input type (`ProblemSpec`) and two output types:
   - `input_hash`
   - `contract_version`
   - `model_version`
+  - `reasoning_pack_id`
+  - `reasoning_pack_version`
+  - `schema_version`
 - Multi-option reasoning:
   - `options[]` includes `{id, title, pros[], cons[], risks[], unknowns[]}`.
   - `comparison` is optional (nullable) and includes `criteria[]` and `rows[]`
@@ -31,5 +34,7 @@ contract consists of a single input type (`ProblemSpec`) and two output types:
   - `UNCLEAR`
   - `REFUSE`
 - The `checks` list is stable-ordered.
-- `delta` is required for `UNCLEAR`/`REFUSE` and provides a minimal change
-  needed to move forward using a deterministic, structured prompt.
+- `delta` is required for `UNCLEAR` and provides a minimal change needed to
+  move forward using a deterministic, structured prompt.
+- `refusal` is required for `REFUSE` and records a structured refusal category
+  and detail. `delta` only appears for `REFUSE` when a resolution path exists.
