@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ThoughtArtifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_header",
+    "reflection",
+    "clarifications",
+    "observations",
+    "flags",
+    "contradiction",
+    "acknowledgment",
+    "summary",
+    "response_text"
+  ],
+  "properties": {
+    "run_header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_hash", "contract_version", "model_version"],
+      "properties": {
+        "input_hash": {"type": "string"},
+        "contract_version": {"type": "string"},
+        "model_version": {"type": "string"}
+      }
+    },
+    "reflection": {"type": "string"},
+    "clarifications": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "observations": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"}
+    },
+    "contradiction": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["earlier", "later"],
+      "properties": {
+        "earlier": {"type": "string"},
+        "later": {"type": "string"}
+      }
+    },
+    "acknowledgment": {"type": ["string", "null"]},
+    "summary": {"type": ["string", "null"]},
+    "response_text": {"type": "string"}
+  }
+}

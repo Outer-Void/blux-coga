@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProblemSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["user_input", "session"],
+  "properties": {
+    "user_input": {
+      "type": "string"
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "history",
+        "last_user_utterances",
+        "last_intent",
+        "extracted_intent",
+        "extracted_constraints",
+        "stopped",
+        "frozen"
+      ],
+      "properties": {
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["speaker", "text"],
+            "properties": {
+              "speaker": {"type": "string"},
+              "text": {"type": "string"}
+            }
+          }
+        },
+        "last_user_utterances": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "last_intent": {
+          "type": ["string", "null"]
+        },
+        "extracted_intent": {
+          "type": ["string", "null"]
+        },
+        "extracted_constraints": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "stopped": {"type": "boolean"},
+        "frozen": {"type": "boolean"}
+      }
+    }
+  }
+}
