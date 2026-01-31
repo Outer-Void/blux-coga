@@ -49,6 +49,16 @@ def validate_schema(schema: Dict[str, Any], data: Any) -> None:
     if "boolean" in allowed_types:
         if data is not None and not isinstance(data, bool):
             raise AssertionError("Expected boolean.")
+    if "integer" in allowed_types:
+        if data is not None and (
+            not isinstance(data, int) or isinstance(data, bool)
+        ):
+            raise AssertionError("Expected integer.")
+    if "number" in allowed_types:
+        if data is not None and (
+            not isinstance(data, (int, float)) or isinstance(data, bool)
+        ):
+            raise AssertionError("Expected number.")
 
 
 def _matches_if(schema: Dict[str, Any], data: Any) -> bool:

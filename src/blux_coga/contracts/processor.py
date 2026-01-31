@@ -32,6 +32,7 @@ from blux_coga.core.constants import (
 from blux_coga.core.state import SessionState
 from blux_coga.dialogue import engine
 from blux_coga.dialogue.reflection import build_clarification, build_reflection
+from blux_coga.profiles import ProfileSpec
 
 
 def _combine_response(
@@ -325,6 +326,7 @@ def _check_contradiction(flags: Dict[str, bool]) -> Check:
 
 def run_contract(
     problem_spec: ProblemSpec,
+    profile: ProfileSpec | None = None,
 ) -> Tuple[ThoughtArtifact, ReasoningVerdict, SessionState]:
     reasoning_pack = _load_reasoning_pack()
     run_header = RunHeader(
@@ -334,6 +336,8 @@ def run_contract(
         reasoning_pack_id=reasoning_pack.pack_id,
         reasoning_pack_version=reasoning_pack.version,
         schema_version=SCHEMA_VERSION,
+        profile_id=profile.profile_id if profile else None,
+        profile_version=profile.profile_version if profile else None,
     )
     state = problem_spec.to_session_state()
     user_input = problem_spec.user_input

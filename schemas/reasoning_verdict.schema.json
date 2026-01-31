@@ -22,7 +22,9 @@
         "model_version": {"type": "string"},
         "reasoning_pack_id": {"type": "string"},
         "reasoning_pack_version": {"type": "string"},
-        "schema_version": {"type": "string"}
+        "schema_version": {"type": "string"},
+        "profile_id": {"type": "string"},
+        "profile_version": {"type": "string"}
       }
     },
     "status": {

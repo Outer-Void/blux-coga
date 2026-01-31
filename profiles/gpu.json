@@ -1,0 +1,9 @@
+{
+  "profile_id": "gpu",
+  "profile_version": "1.0",
+  "device": "gpu",
+  "deterministic": {
+    "seed": 0,
+    "max_steps": 256
+  }
+}

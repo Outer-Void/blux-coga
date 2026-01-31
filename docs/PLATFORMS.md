@@ -3,12 +3,7 @@
 ### Termux (native)
 
 ```bash
-pkg update
-pkg install python3 git
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
-pytest
+./CogA_mux.sh --in path/to/problem.json --out out/
 ```
 
 ### Termux + proot Debian
@@ -18,39 +13,23 @@ pkg update
 pkg install proot-distro
 proot-distro install debian
 proot-distro login debian
-sudo apt update
-sudo apt install -y python3 python3-venv git
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-pytest
+./CogA_proot.sh --in path/to/problem.json --out out/
 ```
 
 ### Linux (Debian/Ubuntu)
 
 ```bash
-sudo apt update
-sudo apt install -y python3 python3-venv git
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-pytest
+./CogA.sh --in path/to/problem.json --out out/
 ```
 
 ### macOS
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-pytest
+./CogA.sh --in path/to/problem.json --out out/
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-py -3 -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -e .
-pytest
+.\CogA.ps1 --in path\to\problem.json --out out\
 ```
