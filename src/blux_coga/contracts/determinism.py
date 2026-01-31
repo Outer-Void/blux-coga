@@ -31,7 +31,11 @@ def stable_json_dumps(payload: Any) -> str:
     )
 
 
+def stable_hash_payload(payload: Any) -> str:
+    encoded = stable_json_dumps(payload).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def stable_hash(problem_spec: ProblemSpec) -> str:
     normalized = normalize_problem_spec(problem_spec)
-    encoded = stable_json_dumps(normalized).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
+    return stable_hash_payload(normalized)

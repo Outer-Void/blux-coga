@@ -89,12 +89,29 @@ class RunHeader:
     input_hash: str
     contract_version: str
     model_version: str
+    reasoning_pack_id: str
+    reasoning_pack_version: str
+    schema_version: str
+
+    @classmethod
+    def from_dict(cls, payload: Dict[str, Any]) -> "RunHeader":
+        return cls(
+            input_hash=payload.get("input_hash", ""),
+            contract_version=payload.get("contract_version", ""),
+            model_version=payload.get("model_version", ""),
+            reasoning_pack_id=payload.get("reasoning_pack_id", "unknown"),
+            reasoning_pack_version=payload.get("reasoning_pack_version", "unknown"),
+            schema_version=payload.get("schema_version", "unknown"),
+        )
 
     def to_dict(self) -> Dict[str, str]:
         return {
             "input_hash": self.input_hash,
             "contract_version": self.contract_version,
             "model_version": self.model_version,
+            "reasoning_pack_id": self.reasoning_pack_id,
+            "reasoning_pack_version": self.reasoning_pack_version,
+            "schema_version": self.schema_version,
         }
 
 
@@ -193,6 +210,7 @@ class ReasoningVerdict:
     status: VerdictStatus
     checks: List[Check]
     delta: Optional[Delta]
+    refusal: Optional["Refusal"] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -200,4 +218,14 @@ class ReasoningVerdict:
             "status": self.status.value,
             "checks": [check.to_dict() for check in self.checks],
             "delta": self.delta.to_dict() if self.delta else None,
+            "refusal": self.refusal.to_dict() if self.refusal else None,
         }
+
+
+@dataclass(frozen=True)
+class Refusal:
+    category: str
+    detail: str
+
+    def to_dict(self) -> Dict[str, str]:
+        return {"category": self.category, "detail": self.detail}

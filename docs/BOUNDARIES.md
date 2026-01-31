@@ -13,6 +13,10 @@ questions. Boundary enforcement rejects directive phrases such as:
 If candidate output violates boundary rules, CogA falls back to safer reflection
 and clarification phrasing.
 
+REFUSE behavior is used when a request explicitly conflicts with non-directive
+or safety boundaries. Refusals include a structured category/detail pair and
+avoid directive language in any artifact field.
+
 Implementation details live in:
 
 - `src/blux_coga/core/boundaries.py`

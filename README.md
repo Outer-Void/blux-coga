@@ -50,3 +50,7 @@ pytest
 - `docs/PLATFORMS.md`
 - `docs/REASONING_PACKS.md`
 - `docs/ACCEPTANCE.md`
+- `docs/COMPATIBILITY.md`
+- `docs/DEPRECATION.md`
+- `docs/RUNBOOK.md`
+- `docs/PRO_NOTES.md`
