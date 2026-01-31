@@ -1,2 +1,0 @@
-[console_scripts]
-blux-coga = blux_coga.io.cli:main
