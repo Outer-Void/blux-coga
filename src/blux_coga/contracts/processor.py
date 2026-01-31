@@ -4,10 +4,15 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
+import re
+
 from blux_coga.contracts.determinism import stable_hash
 from blux_coga.contracts.models import (
     Check,
+    ComparisonMatrix,
+    ComparisonRow,
     Delta,
+    Option,
     ProblemSpec,
     ReasoningVerdict,
     RunHeader,
@@ -51,18 +56,23 @@ def _artifact_from_state(
     clarifications: List[str] = []
     observations: List[str] = []
     contradiction_payload: Optional[Dict[str, str]] = None
+    options: List[Option] = []
+    comparison: Optional[ComparisonMatrix] = None
     acknowledgment: Optional[str] = None
     summary: Optional[str] = None
     response_text = ""
 
     if state.frozen:
-        artifact = ThoughtArtifact(
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
             run_header=run_header,
             reflection=reflection,
             clarifications=clarifications,
             observations=observations,
             flags=flags,
             contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
             acknowledgment=acknowledgment,
             summary=summary,
             response_text=response_text,
@@ -77,13 +87,16 @@ def _artifact_from_state(
         flags["frozen_state"] = True
         acknowledgment = "Intent frozen. I'll stop here."
         response_text = acknowledgment
-        artifact = ThoughtArtifact(
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
             run_header=run_header,
             reflection=reflection,
             clarifications=clarifications,
             observations=observations,
             flags=flags,
             contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
             acknowledgment=acknowledgment,
             summary=summary,
             response_text=response_text,
@@ -96,13 +109,16 @@ def _artifact_from_state(
         flags["stopped_state"] = True
         acknowledgment = "Acknowledged. I'll stop here."
         response_text = acknowledgment
-        artifact = ThoughtArtifact(
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
             run_header=run_header,
             reflection=reflection,
             clarifications=clarifications,
             observations=observations,
             flags=flags,
             contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
             acknowledgment=acknowledgment,
             summary=summary,
             response_text=response_text,
@@ -117,13 +133,16 @@ def _artifact_from_state(
         clarifications = [build_clarification(intent)]
         fallback = _combine_response(reflection, [], clarifications)
         response_text = enforce(summary, fallback)
-        artifact = ThoughtArtifact(
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
             run_header=run_header,
             reflection=reflection,
             clarifications=clarifications,
             observations=observations,
             flags=flags,
             contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
             acknowledgment=acknowledgment,
             summary=summary,
             response_text=response_text,
@@ -147,13 +166,16 @@ def _artifact_from_state(
         )
         fallback = _combine_response(reflection, [], clarifications)
         response_text = enforce(text, fallback)
-        artifact = ThoughtArtifact(
+        options, comparison = _build_options_and_comparison(user_input)
+        artifact = _make_artifact(
             run_header=run_header,
             reflection=reflection,
             clarifications=clarifications,
             observations=observations,
             flags=flags,
             contradiction=contradiction_payload,
+            options=options,
+            comparison=comparison,
             acknowledgment=acknowledgment,
             summary=summary,
             response_text=response_text,
@@ -161,7 +183,7 @@ def _artifact_from_state(
         return (
             artifact,
             VerdictStatus.UNCLEAR,
-            "Clarify which statement reflects your current intent.",
+            "clarification_needed: resolve_conflict_between_statements",
             flags,
         )
 
@@ -181,13 +203,16 @@ def _artifact_from_state(
         _combine_response(reflection, [], [build_clarification(intent)]),
     )
 
-    artifact = ThoughtArtifact(
+    options, comparison = _build_options_and_comparison(user_input)
+    artifact = _make_artifact(
         run_header=run_header,
         reflection=reflection,
         clarifications=clarifications,
         observations=observations,
         flags=flags,
         contradiction=contradiction_payload,
+        options=options,
+        comparison=comparison,
         acknowledgment=acknowledgment,
         summary=summary,
         response_text=response_text,
@@ -197,7 +222,7 @@ def _artifact_from_state(
         return (
             artifact,
             VerdictStatus.UNCLEAR,
-            "Share more specific detail about what you mean.",
+            "clarification_needed: add_specific_detail",
             flags,
         )
 
@@ -215,6 +240,17 @@ def _check_non_directive(artifact: ThoughtArtifact) -> Check:
     texts.extend(artifact.observations)
     if artifact.contradiction:
         texts.extend(list(artifact.contradiction.values()))
+    for option in artifact.options:
+        texts.append(option.title)
+        texts.extend(option.pros)
+        texts.extend(option.cons)
+        texts.extend(option.risks)
+        texts.extend(option.unknowns)
+    if artifact.comparison:
+        texts.extend(artifact.comparison.criteria)
+        for row in artifact.comparison.rows:
+            texts.append(row.option_id)
+            texts.extend(row.values)
     violation = any(has_violation(text) for text in texts if text)
     status = "PASS" if not violation else "FAIL"
     message = "Non-directive language enforced."
@@ -298,10 +334,165 @@ def _build_verdict(
     ]
     delta = None
     if status in (VerdictStatus.UNCLEAR, VerdictStatus.REFUSE):
-        delta = Delta(minimal_change=delta_message or "Provide a minimal clarification.")
+        delta = Delta(
+            minimal_change=_sanitize_delta(
+                delta_message or "clarification_needed: provide_minimal_context"
+            )
+        )
     return ReasoningVerdict(
         run_header=run_header,
         status=status,
         checks=checks,
         delta=delta,
     )
+
+
+def _sanitize_text(text: str, fallback: str) -> str:
+    return enforce(text.strip(), fallback)
+
+
+def _sanitize_list(items: List[str], keep_empty: bool = False) -> List[str]:
+    sanitized = [_sanitize_text(item, "") for item in items]
+    if keep_empty:
+        return sanitized
+    return [item for item in sanitized if item]
+
+
+def _sanitize_optional(text: Optional[str], fallback: Optional[str]) -> Optional[str]:
+    if text is None:
+        return None
+    if has_violation(text):
+        return fallback
+    return text
+
+
+def _sanitize_contradiction(
+    payload: Optional[Dict[str, str]]
+) -> Optional[Dict[str, str]]:
+    if not payload:
+        return None
+    return {
+        "earlier": _sanitize_text(payload.get("earlier", ""), "redacted statement"),
+        "later": _sanitize_text(payload.get("later", ""), "redacted statement"),
+    }
+
+
+def _sanitize_delta(message: str) -> str:
+    return _sanitize_text(message, "clarification_needed: provide_minimal_context")
+
+
+def _make_artifact(
+    run_header: RunHeader,
+    reflection: str,
+    clarifications: List[str],
+    observations: List[str],
+    flags: Dict[str, bool],
+    contradiction: Optional[Dict[str, str]],
+    options: List[Option],
+    comparison: Optional[ComparisonMatrix],
+    acknowledgment: Optional[str],
+    summary: Optional[str],
+    response_text: str,
+) -> ThoughtArtifact:
+    safe_reflection = _sanitize_text(reflection, "")
+    safe_clarifications = _sanitize_list(clarifications)
+    safe_observations = _sanitize_list(observations)
+    safe_contradiction = _sanitize_contradiction(contradiction)
+    safe_ack = _sanitize_optional(acknowledgment, None)
+    safe_summary = _sanitize_optional(summary, None)
+    safe_response = _sanitize_text(
+        response_text,
+        _combine_response(safe_reflection, safe_observations, safe_clarifications),
+    )
+    safe_options = _sanitize_options(options)
+    safe_comparison = _sanitize_comparison(comparison)
+    return ThoughtArtifact(
+        run_header=run_header,
+        reflection=safe_reflection,
+        clarifications=safe_clarifications,
+        observations=safe_observations,
+        flags=flags,
+        contradiction=safe_contradiction,
+        options=safe_options,
+        comparison=safe_comparison,
+        acknowledgment=safe_ack,
+        summary=safe_summary,
+        response_text=safe_response,
+    )
+
+
+def _sanitize_options(options: List[Option]) -> List[Option]:
+    sanitized: List[Option] = []
+    for option in options:
+        title = _sanitize_text(option.title, "Option")
+        pros = _sanitize_list(option.pros)
+        cons = _sanitize_list(option.cons)
+        risks = _sanitize_list(option.risks)
+        unknowns = _sanitize_list(option.unknowns)
+        sanitized.append(
+            Option(
+                id=option.id,
+                title=title,
+                pros=pros,
+                cons=cons,
+                risks=risks,
+                unknowns=unknowns,
+            )
+        )
+    return sanitized
+
+
+def _sanitize_comparison(
+    comparison: Optional[ComparisonMatrix],
+) -> Optional[ComparisonMatrix]:
+    if not comparison:
+        return None
+    criteria = _sanitize_list(comparison.criteria)
+    rows = [
+        ComparisonRow(
+            option_id=_sanitize_text(row.option_id, "option"),
+            values=_sanitize_list(row.values, keep_empty=True),
+        )
+        for row in comparison.rows
+    ]
+    return ComparisonMatrix(criteria=criteria, rows=rows)
+
+
+def _build_options_and_comparison(
+    user_input: str,
+) -> tuple[List[Option], Optional[ComparisonMatrix]]:
+    titles = _extract_option_titles(user_input)
+    if len(titles) < 2:
+        return [], None
+    options: List[Option] = []
+    for index, title in enumerate(titles, start=1):
+        option_id = f"option-{index}"
+        safe_title = _sanitize_text(title, f"Option {index}")
+        options.append(
+            Option(
+                id=option_id,
+                title=safe_title,
+                pros=[],
+                cons=[],
+                risks=[],
+                unknowns=[],
+            )
+        )
+    criteria = ["pros", "cons", "risks", "unknowns"]
+    rows = [
+        ComparisonRow(option_id=option.id, values=["", "", "", ""])
+        for option in options
+    ]
+    return options, ComparisonMatrix(criteria=criteria, rows=rows)
+
+
+def _extract_option_titles(user_input: str) -> List[str]:
+    pieces = re.split(r"\s+or\s+", user_input, flags=re.IGNORECASE)
+    cleaned: List[str] = []
+    seen = set()
+    for piece in pieces:
+        stripped = piece.strip(" .!?\"'")
+        if stripped and stripped not in seen:
+            cleaned.append(stripped)
+            seen.add(stripped)
+    return cleaned

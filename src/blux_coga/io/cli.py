@@ -5,13 +5,35 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 
 from blux_coga.contracts.determinism import stable_json_dumps
 from blux_coga.contracts.models import ProblemSpec
 from blux_coga.core.thinker import CogAThinker
+from blux_coga.io.acceptance import run_acceptance
 
 
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] == "accept":
+        accept_parser = argparse.ArgumentParser(
+            description="Run CogA acceptance fixtures."
+        )
+        accept_parser.add_argument(
+            "--fixtures",
+            type=Path,
+            required=True,
+            help="Directory containing ProblemSpec fixture files.",
+        )
+        accept_parser.add_argument(
+            "--out",
+            type=Path,
+            required=True,
+            help="Directory for acceptance outputs.",
+        )
+        args = accept_parser.parse_args(sys.argv[2:])
+        run_acceptance(args.fixtures, args.out)
+        return
+
     parser = argparse.ArgumentParser(description="Run CogA contract processing.")
     parser.add_argument(
         "--input",

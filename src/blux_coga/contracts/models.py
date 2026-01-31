@@ -117,6 +117,47 @@ class Check:
 
 
 @dataclass(frozen=True)
+class Option:
+    id: str
+    title: str
+    pros: List[str] = field(default_factory=list)
+    cons: List[str] = field(default_factory=list)
+    risks: List[str] = field(default_factory=list)
+    unknowns: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "pros": list(self.pros),
+            "cons": list(self.cons),
+            "risks": list(self.risks),
+            "unknowns": list(self.unknowns),
+        }
+
+
+@dataclass(frozen=True)
+class ComparisonRow:
+    option_id: str
+    values: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"option_id": self.option_id, "values": list(self.values)}
+
+
+@dataclass(frozen=True)
+class ComparisonMatrix:
+    criteria: List[str]
+    rows: List[ComparisonRow]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "criteria": list(self.criteria),
+            "rows": [row.to_dict() for row in self.rows],
+        }
+
+
+@dataclass(frozen=True)
 class ThoughtArtifact:
     run_header: RunHeader
     reflection: str
@@ -124,6 +165,8 @@ class ThoughtArtifact:
     observations: List[str]
     flags: Dict[str, bool]
     contradiction: Optional[Dict[str, str]]
+    options: List[Option]
+    comparison: Optional[ComparisonMatrix]
     acknowledgment: Optional[str]
     summary: Optional[str]
     response_text: str
@@ -136,6 +179,8 @@ class ThoughtArtifact:
             "observations": list(self.observations),
             "flags": dict(self.flags),
             "contradiction": self.contradiction,
+            "options": [option.to_dict() for option in self.options],
+            "comparison": self.comparison.to_dict() if self.comparison else None,
             "acknowledgment": self.acknowledgment,
             "summary": self.summary,
             "response_text": self.response_text,
