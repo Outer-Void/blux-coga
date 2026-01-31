@@ -1,19 +1,27 @@
-# Platform Notes
+## Platforms
 
-## Termux (Android)
-
-### Native Termux
-
-Install Python with the Termux package manager:
+### Termux (native)
 
 ```bash
-pkg install python3
+pkg update
+pkg install python git
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+pytest
 ```
 
-### Termux + proot-distro Debian
-
-Inside the Debian environment, install dependencies with `apt`:
+### Termux + proot Debian
 
 ```bash
-sudo apt update && sudo apt install python3 python3-venv python3-pip
+pkg update
+pkg install proot-distro
+proot-distro install debian
+proot-distro login debian
+apt update
+apt install -y python3 python3-venv git
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+pytest
 ```

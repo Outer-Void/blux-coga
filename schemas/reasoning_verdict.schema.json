@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReasoningVerdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_header", "status", "checks", "delta"],
+  "properties": {
+    "run_header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_hash", "contract_version", "model_version"],
+      "properties": {
+        "input_hash": {"type": "string"},
+        "contract_version": {"type": "string"},
+        "model_version": {"type": "string"}
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETE", "UNCLEAR", "REFUSE"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "message"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"type": "string", "enum": ["PASS", "FAIL", "FLAG"]},
+          "message": {"type": "string"}
+        }
+      }
+    },
+    "delta": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["minimal_change"],
+      "properties": {
+        "minimal_change": {"type": "string"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"enum": ["UNCLEAR", "REFUSE"]}}
+      },
+      "then": {
+        "properties": {"delta": {"type": "object"}}
+      }
+    }
+  ]
+}
