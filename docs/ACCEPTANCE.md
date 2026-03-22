@@ -4,6 +4,9 @@ The acceptance harness replays `ProblemSpec` fixtures, validates the input and
 output schemas, writes per-fixture artifacts, and emits a deterministic
 `report.json` summary.
 
+This repo does not ship a permanent fixture corpus. The harness expects a
+fixture directory provided at runtime.
+
 ### CLI
 
 ```bash
@@ -20,9 +23,9 @@ The output directory contains:
 
 The report records:
 
-- release metadata (`contract_version`, `model_version`, pack metadata,
-  `schema_version`)
+- release metadata (`contract_version`, `model_version`, reasoning-pack
+  metadata, `schema_version`)
 - per-fixture input hash and verdict status
 - schema validation results
-- deterministic comparisons with expected artifacts when fixture subdirectories
-  contain expected outputs
+- deterministic comparisons with expected artifacts when fixture
+  subdirectories contain expected outputs

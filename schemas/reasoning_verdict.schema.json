@@ -3,7 +3,7 @@
   "title": "ReasoningVerdict",
   "type": "object",
   "additionalProperties": false,
-  "required": ["run_header", "status", "checks", "delta"],
+  "required": ["run_header", "status", "checks", "delta", "refusal"],
   "properties": {
     "run_header": {
       "type": "object",

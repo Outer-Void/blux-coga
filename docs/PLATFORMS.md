@@ -43,7 +43,7 @@ sudo apt install -y python3 python3-venv python3-pip git
 .\CogA.ps1 --in path\to\problem.json --out out\
 ```
 
-Across platforms, the canonical CLI form is:
+Across platforms, the canonical CLI form remains:
 
 ```bash
 blux-coga run --input path/to/problem.json --output-dir out
