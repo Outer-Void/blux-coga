@@ -9,15 +9,23 @@ CogA normalizes each `ProblemSpec` before hashing:
 The normalized payload is hashed with SHA-256 and emitted as `input_hash` in
 both output `run_header` blocks.
 
-Determinism in the frozen release covers:
+### Frozen deterministic guarantees
 
 - same `ProblemSpec` + same reasoning pack + same profile => byte-identical
   canonical JSON outputs
-- canonical JSON serialization for artifacts and acceptance reports
+- stable JSON serialization for artifacts, verdicts, and acceptance reports
 - stable check ordering in `ReasoningVerdict`
-- bounded clarification and observation counts
-- deterministic selection of `UNCLEAR` deltas
-- deterministic inclusion of profile metadata when a profile is used
-- deterministic canonical filenames for file-mode and acceptance-harness runs
+- deterministic `UNCLEAR` delta selection
+- deterministic inclusion of profile metadata only when a profile is selected
+- canonical file-mode filenames:
+  - `thought_artifact.json`
+  - `reasoning_verdict.json`
 
-Implementation: `src/blux_coga/contracts/determinism.py`.
+### Determinism boundary
+
+Determinism is defined for the canonical file-based interface and acceptance
+harness. Interactive mode uses the same engine, but later turns intentionally
+overwrite the same output filenames in the chosen directory.
+
+Implementation: `src/blux_coga/contracts/determinism.py` and
+`src/blux_coga/contracts/processor.py`.

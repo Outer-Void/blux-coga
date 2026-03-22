@@ -1,63 +1,71 @@
 ## Contract
 
-Package release `blux-coga` 1.0.0 ships the frozen engine identity
-`CogA-1.0-pro`. The contract consists of one input schema (`ProblemSpec`) and
-two emitted output schemas (`ThoughtArtifact` and `ReasoningVerdict`).
+The frozen release is package `blux-coga` 1.0.0 with runtime identity
+`CogA-1.0-pro`.
 
-### Input: ProblemSpec
+The contract surface is:
 
-- Location: `schemas/problem.schema.json`
-- Required top-level fields: `user_input`, `session`
-- Session fields: `history`, `last_user_utterances`, `last_intent`,
-  `extracted_intent`, `extracted_constraints`, `stopped`, `frozen`
+- one input schema: `ProblemSpec`
+- two output schemas: `ThoughtArtifact` and `ReasoningVerdict`
 
-### Output: ThoughtArtifact
+### Input: `ProblemSpec`
 
-- Location: `schemas/thought_artifact.schema.json`
-- Required fields:
-  - `run_header`
-  - `reflection`
-  - `clarifications[]`
-  - `observations[]`
-  - `flags`
-  - `contradiction`
-  - `options[]`
-  - `comparison`
-  - `acknowledgment`
-  - `summary`
-  - `response_text`
-- `run_header` always includes:
-  - `input_hash`
-  - `contract_version`
-  - `model_version`
-  - `reasoning_pack_id`
-  - `reasoning_pack_version`
-  - `schema_version`
-- `run_header` additionally includes `profile_id` and `profile_version` only
-  when a profile is selected.
+Location: `schemas/problem.schema.json`
 
-### Output: ReasoningVerdict
+Required top-level fields:
 
-- Location: `schemas/reasoning_verdict.schema.json`
-- Required fields:
-  - `run_header`
-  - `status`
-  - `checks[]`
-  - `delta`
-  - `refusal`
-- Status values:
-  - `COMPLETE`
-  - `UNCLEAR`
-  - `REFUSE`
-- `checks[]` is emitted in stable order.
-- `delta` is required in the JSON object shape, contains an object for
-  `UNCLEAR`, may contain an object for `REFUSE`, and is otherwise `null`.
-- `refusal` is required in the JSON object shape, contains an object for
-  `REFUSE`, and is otherwise `null`.
+- `user_input`
+- `session`
 
-### Output metadata freeze
+Required `session` fields:
 
-Current run headers record only these metadata fields:
+- `history`
+- `last_user_utterances`
+- `last_intent`
+- `extracted_intent`
+- `extracted_constraints`
+- `stopped`
+- `frozen`
+
+### Output: `ThoughtArtifact`
+
+Location: `schemas/thought_artifact.schema.json`
+
+Required fields:
+
+- `run_header`
+- `reflection`
+- `clarifications`
+- `observations`
+- `flags`
+- `contradiction`
+- `options`
+- `comparison`
+- `acknowledgment`
+- `summary`
+- `response_text`
+
+### Output: `ReasoningVerdict`
+
+Location: `schemas/reasoning_verdict.schema.json`
+
+Required fields:
+
+- `run_header`
+- `status`
+- `checks`
+- `delta`
+- `refusal`
+
+Allowed `status` values:
+
+- `COMPLETE`
+- `UNCLEAR`
+- `REFUSE`
+
+### Frozen run-header metadata
+
+Current outputs record these run-header fields:
 
 - `input_hash`
 - `contract_version`
@@ -67,3 +75,15 @@ Current run headers record only these metadata fields:
 - `schema_version`
 - optional `profile_id`
 - optional `profile_version`
+
+`profile_id` and `profile_version` are omitted when no profile is selected.
+
+### Stable field rules
+
+- `checks` is emitted in stable order.
+- `delta` is always present in the JSON object shape; it is an object for
+  `UNCLEAR`, may be an object for `REFUSE`, and is otherwise `null`.
+- `refusal` is always present in the JSON object shape; it is an object for
+  `REFUSE` and otherwise `null`.
+- Schema, model code, CLI file mode, and acceptance outputs are expected to
+  match this contract exactly in the frozen release.

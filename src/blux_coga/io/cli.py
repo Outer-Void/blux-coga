@@ -9,6 +9,7 @@ import sys
 from typing import Optional
 
 from blux_coga.contracts.determinism import stable_json_dumps
+from blux_coga.core.constants import PACKAGE_NAME, PACKAGE_VERSION
 from blux_coga.contracts.models import ProblemSpec
 from blux_coga.core.thinker import CogAThinker
 from blux_coga.io.acceptance import run_acceptance
@@ -56,9 +57,9 @@ def _build_run_parser(parser: argparse.ArgumentParser) -> None:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="blux-coga",
+        prog=PACKAGE_NAME,
         description=(
-            "Run deterministic BLUX CogA contract processing. "
+            f"Run deterministic BLUX CogA contract processing for {PACKAGE_NAME} {PACKAGE_VERSION}. "
             "Canonical harness usage is: blux-coga run --input problem.json --output-dir out"
         ),
     )
@@ -81,7 +82,9 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Directory containing ProblemSpec fixture files.",
     )
     accept_parser.add_argument(
+        "--output-dir",
         "--out",
+        dest="output_dir",
         type=Path,
         required=True,
         help="Directory for acceptance outputs.",
@@ -152,7 +155,7 @@ def main() -> None:
         _run_file_or_interactive(args)
         return
     if args.command == "accept":
-        run_acceptance(args.fixtures, args.out)
+        run_acceptance(args.fixtures, args.output_dir)
         return
     raise SystemExit(f"Unknown command: {args.command}")
 

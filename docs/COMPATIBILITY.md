@@ -1,21 +1,23 @@
 ## Compatibility
 
-### Frozen compatibility decision
+### Frozen compatibility surface
 
 The supported legacy surface is intentionally limited to:
 
-- the legacy top-level CLI alias `blux-coga --input ... --output-dir ...`
-  which maps directly to `blux-coga run ...`
-- the runner-script argument aliases `--in` and `--out`
-- reading older run headers by backfilling missing `reasoning_pack_*`,
-  `schema_version`, and profile metadata as unknown or absent
+- the top-level CLI alias `blux-coga --input ... --output-dir ...`, which maps
+  directly to `blux-coga run ...`
+- runner-script argument aliases `--in` and `--out`
+- acceptance-harness alias `--out` for `--output-dir`
+- reading older run headers by backfilling missing `reasoning_pack_id`,
+  `reasoning_pack_version`, and `schema_version` as `unknown`
+- leaving legacy profile metadata absent when an older header did not record it
 
-Anything else is outside the frozen support promise unless it is documented in
-this repo.
+Anything else is outside the frozen support promise unless it is explicitly
+documented in this repository.
 
 ### Current run-header fields
 
-Current outputs include these run-header fields:
+Current outputs include:
 
 - `input_hash`
 - `contract_version`
@@ -29,7 +31,8 @@ Current outputs include these run-header fields:
 ### Current compatibility rules
 
 - `delta` is always emitted; it is an object for `UNCLEAR` and otherwise `null`
-  unless a structured refusal delta is explicitly added in the future
+  unless a structured refusal delta is intentionally added later
 - `refusal` is always emitted; it is an object for `REFUSE` and otherwise `null`
-- missing optional profile metadata means no profile was recorded
-- schema changes should remain additive unless a major contract change is made
+- missing profile metadata means no profile was recorded for that run
+- undocumented alternate filenames, undocumented alternate CLI forms, and
+  undocumented hidden metadata are not part of the compatibility contract

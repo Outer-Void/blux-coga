@@ -4,7 +4,7 @@ param(
 )
 
 if ($Args.Count -eq 0) {
-    Write-Host "Usage: .\\CogA.ps1 --in <problem.json> --out <out_dir> [--profile <id>|--profile-file <path>] [--interactive]"
+    Write-Host "Usage: .\\CogA.ps1 run --in <problem.json> --out <out_dir> [--profile <id>|--profile-file <path>] [--interactive]"
     exit 1
 }
 
@@ -29,4 +29,8 @@ raise SystemExit(0 if "dev" in extras else 1)
 $installTarget = if ($LASTEXITCODE -eq 0) { ".[dev]" } else { "." }
 
 & $venvPython -m pip install -e $installTarget
-& $venvPython -m blux_coga @Args
+$forwardArgs = $Args
+if ($forwardArgs.Count -gt 0 -and $forwardArgs[0] -notin @("run", "accept", "-h", "--help")) {
+    $forwardArgs = @("run") + $forwardArgs
+}
+& $venvPython -m blux_coga @forwardArgs

@@ -1,5 +1,7 @@
-"""Shared constants for CogA."""
+"""Shared frozen identity and contract constants for BLUX CogA."""
 
+PACKAGE_NAME = "blux-coga"
+PACKAGE_VERSION = "1.0.0"
 MODEL_VERSION = "CogA-1.0-pro"
 CONTRACT_VERSION = "1.0"
 SCHEMA_VERSION = "1.0"
