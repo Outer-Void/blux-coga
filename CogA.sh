@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [ "$#" -eq 0 ]; then
-  echo "Usage: ./CogA.sh --in <problem.json> --out <out_dir> [--profile <id>|--profile-file <path>] [--interactive]"
+  echo "Usage: ./CogA.sh run --in <problem.json> --out <out_dir> [--profile <id>|--profile-file <path>] [--interactive]"
   exit 1
 fi
 
@@ -31,4 +31,8 @@ then
 fi
 
 python -m pip install -e "$INSTALL_TARGET"
-python -m blux_coga "$@"
+ARGS=("$@")
+if [ "${#ARGS[@]}" -gt 0 ] && [ "${ARGS[0]}" != "run" ] && [ "${ARGS[0]}" != "accept" ] && [ "${ARGS[0]}" != "-h" ] && [ "${ARGS[0]}" != "--help" ]; then
+  ARGS=(run "${ARGS[@]}")
+fi
+python -m blux_coga "${ARGS[@]}"

@@ -90,3 +90,13 @@ def test_single_turn_interactive_matches_file_mode(
     assert (file_out / "reasoning_verdict.json").read_text(encoding="utf-8") == (
         interactive_out / "reasoning_verdict.json"
     ).read_text(encoding="utf-8")
+
+
+def test_accept_subcommand_supports_canonical_output_dir_alias() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        ["accept", "--fixtures", "fixtures", "--output-dir", "accept-out"]
+    )
+
+    assert str(args.fixtures) == "fixtures"
+    assert str(args.output_dir) == "accept-out"

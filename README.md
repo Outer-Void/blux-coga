@@ -1,12 +1,11 @@
 # blux-coga
 
-`blux-coga` 1.0.0 packages the frozen BLUX CogA runtime identity
-`CogA-1.0-pro` as a deterministic, file-first contract processor. It reads a
-`ProblemSpec` JSON input, applies the non-directive contract, and writes stable
-JSON artifacts that are ready for harness use, dataset export, and training
-preparation.
+`blux-coga` 1.0.0 is the frozen BLUX CogA engine package. It ships the runtime
+identity `CogA-1.0-pro` as a deterministic, contract-first, file-first
+processor that turns one `ProblemSpec` JSON input into two canonical JSON
+outputs.
 
-## Frozen runtime identity
+## Frozen identity
 
 - package name: `blux-coga`
 - package version: `1.0.0`
@@ -14,65 +13,70 @@ preparation.
 - contract version: `1.0`
 - schema version: `1.0`
 - default reasoning pack: `default` version `1.0`
+- built-in profiles: `cpu` version `1.0`, `gpu` version `1.0`
 
-## Canonical usage
+## Canonical interface
 
-The canonical harness and dataset path is file-based execution:
+The canonical harness, dataset-alignment, export-preparation, and training
+handoff path is deterministic file mode:
 
 ```bash
 blux-coga run --input path/to/problem.json --output-dir out
 ```
 
-Canonical file mode writes exactly:
+That command writes exactly:
 
 - `out/thought_artifact.json`
 - `out/reasoning_verdict.json`
 
-Intentional compatibility aliases remain available and map to the same `run`
-behavior:
+The canonical input shape is `schemas/problem.schema.json`. The canonical output
+shapes are `schemas/thought_artifact.schema.json` and
+`schemas/reasoning_verdict.schema.json`.
+
+### Intentional compatibility aliases
+
+These compatibility entrypoints remain supported and resolve to the same
+runtime behavior:
 
 ```bash
 blux-coga --input path/to/problem.json --output-dir out
-./CogA.sh --in path/to/problem.json --out out
+./CogA.sh run --in path/to/problem.json --out out
 ```
 
-Optional deterministic profile selection:
+### Optional interactive inspection mode
 
-```bash
-blux-coga run --profile cpu --input path/to/problem.json --output-dir out
-```
-
-Optional interactive mode exists only for manual local inspection. A single
-interactive turn reuses the same contract engine and output filenames, but the
-REPL is not the canonical harness surface and later turns overwrite the same
-output files:
+Interactive mode exists for manual local inspection only:
 
 ```bash
 blux-coga run --interactive --output-dir out
 ```
 
-## Enforced behavior
+It reuses the same contract engine and canonical filenames, but it is not the
+canonical harness surface. Each later turn overwrites the same two files in the
+selected output directory.
 
-- Deterministic hashing of normalized `ProblemSpec` payloads.
-- Stable JSON serialization for all emitted artifacts and acceptance reports.
-- Non-directive boundary enforcement across all user-visible artifact and
-  verdict fields.
-- Structured `COMPLETE`, `UNCLEAR`, and `REFUSE` verdicts.
-- Deterministic run headers containing contract, schema, reasoning-pack, and
-  optional profile metadata.
+## Deterministic metadata emitted on every run
 
-## Support policy
+Both output files include `run_header` metadata with:
 
-The frozen compatibility surface is intentionally narrow:
+- `input_hash`
+- `contract_version`
+- `model_version`
+- `reasoning_pack_id`
+- `reasoning_pack_version`
+- `schema_version`
+- `profile_id` and `profile_version` when a profile is explicitly selected
 
-- Supported: canonical `run` and `accept` subcommands.
-- Supported: the legacy top-level `blux-coga --input ...` alias for `run`.
-- Supported: reading older run headers by backfilling missing pack/schema
-  metadata as unknown.
-- Not promised: older undocumented CLI shapes, alternate output filenames,
-  or hidden compatibility fields.
+## Behavior guarantees
 
-## Development
+- Same `ProblemSpec` + same reasoning pack + same profile yields byte-identical
+  canonical JSON.
+- `COMPLETE`, `UNCLEAR`, and `REFUSE` are emitted as structured verdicts.
+- Non-directive enforcement applies across all user-visible artifact and verdict
+  fields.
+- Acceptance harness reports are serialized with the same stable JSON rules.
+
+## Installation and local verification
 
 ```bash
 python -m pip install -e .
@@ -84,10 +88,10 @@ pytest
 - `docs/CONTRACT.md`
 - `docs/DETERMINISM.md`
 - `docs/BOUNDARIES.md`
-- `docs/PLATFORMS.md`
 - `docs/REASONING_PACKS.md`
 - `docs/ACCEPTANCE.md`
 - `docs/COMPATIBILITY.md`
 - `docs/DEPRECATION.md`
 - `docs/RUNBOOK.md`
 - `docs/PRO_NOTES.md`
+- `docs/PLATFORMS.md`
