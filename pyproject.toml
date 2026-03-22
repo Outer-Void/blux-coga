@@ -1,9 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "blux-coga"
-version = "0.1.0"
-description = "BLUX-CogA conversational reasoning scaffold"
+version = "1.0.0"
+description = "Deterministic BLUX CogA contract processor for file-based reasoning artifacts"
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [{name = "Outer-Void / Justadudeinspace (JADIS)"}]
+license = {text = "BLUX Proprietary License"}
 
 [project.scripts]
 blux-coga = "blux_coga.io.cli:main"

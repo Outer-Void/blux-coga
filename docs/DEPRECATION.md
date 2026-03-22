@@ -1,9 +1,7 @@
-## Deprecation Policy
+## Deprecation policy
 
-CogA deprecates contract features only on major releases. Deprecations are
-announced in advance, remain additive during the deprecation window, and
-provide clear migration notes in the release runbook.
+This repo currently exposes one stable contract line: package `blux-coga`
+1.0.0 with engine identity `CogA-1.0-pro`.
 
-### Current deprecations
-
-None.
+There are no active deprecations in this release. Compatibility handling for
+legacy headers exists only for reading older artifacts.

@@ -1,21 +1,20 @@
-## Determinism & Hashing
+## Determinism
 
-CogA normalizes each `ProblemSpec` before hashing. Normalization:
+CogA normalizes each `ProblemSpec` before hashing:
 
-- Sorts dictionary keys recursively.
-- Keeps array ordering stable while normalizing each element.
+- dictionaries are sorted recursively
+- list ordering is preserved
+- canonical JSON uses sorted keys and compact separators
 
-The normalized payload is serialized with stable JSON settings (sorted keys,
-no extra whitespace) and hashed with SHA-256. The resulting `input_hash` is
-included in every `run_header`, ensuring identical inputs produce byte-identical
-outputs.
+The normalized payload is hashed with SHA-256 and emitted as `input_hash` in
+both output `run_header` blocks.
 
-Determinism guarantees also cover:
+Determinism in the current release also covers:
 
-- Canonical JSON serialization for reports and artifact comparisons.
-- Stable ordering for checks and bounded option enumeration.
-- Deterministic UNCLEAR deltas with explicit priority rules.
+- canonical JSON serialization for artifacts and acceptance reports
+- stable check ordering in `ReasoningVerdict`
+- bounded clarification and observation counts
+- deterministic selection of `UNCLEAR` deltas
+- deterministic inclusion of profile metadata when a profile is used
 
-Implementation details live in:
-
-- `src/blux_coga/contracts/determinism.py`
+Implementation: `src/blux_coga/contracts/determinism.py`.

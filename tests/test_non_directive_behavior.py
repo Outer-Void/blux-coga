@@ -26,5 +26,10 @@ def test_non_directive_behavior():
         for row in artifact.comparison.rows:
             texts.append(row.option_id)
             texts.extend(row.values)
+    if verdict.delta:
+        texts.append(verdict.delta.minimal_change)
+    if verdict.refusal:
+        texts.append(verdict.refusal.category)
+        texts.append(verdict.refusal.detail)
     assert any(check.id == "non_directive" for check in verdict.checks)
     assert not any(has_violation(text) for text in texts if text)
