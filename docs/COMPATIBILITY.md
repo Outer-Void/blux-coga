@@ -1,5 +1,20 @@
 ## Compatibility
 
+### Frozen compatibility decision
+
+The supported legacy surface is intentionally limited to:
+
+- the legacy top-level CLI alias `blux-coga --input ... --output-dir ...`
+  which maps directly to `blux-coga run ...`
+- the runner-script argument aliases `--in` and `--out`
+- reading older run headers by backfilling missing `reasoning_pack_*`,
+  `schema_version`, and profile metadata as unknown or absent
+
+Anything else is outside the frozen support promise unless it is documented in
+this repo.
+
+### Current run-header fields
+
 Current outputs include these run-header fields:
 
 - `input_hash`
@@ -11,12 +26,10 @@ Current outputs include these run-header fields:
 - optional `profile_id`
 - optional `profile_version`
 
-Consumers reading older artifacts may backfill missing `reasoning_pack_*`,
-`schema_version`, and profile fields as unknown or absent legacy metadata.
+### Current compatibility rules
 
-Current compatibility rules:
-
-- `delta` is mandatory for `UNCLEAR`
-- `refusal` is mandatory for `REFUSE`
+- `delta` is always emitted; it is an object for `UNCLEAR` and otherwise `null`
+  unless a structured refusal delta is explicitly added in the future
+- `refusal` is always emitted; it is an object for `REFUSE` and otherwise `null`
 - missing optional profile metadata means no profile was recorded
 - schema changes should remain additive unless a major contract change is made

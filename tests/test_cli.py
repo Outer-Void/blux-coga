@@ -52,3 +52,41 @@ def test_cli_legacy_alias_maps_to_run(
     cli.main()
     assert (out_dir / "thought_artifact.json").exists()
     assert (out_dir / "reasoning_verdict.json").exists()
+
+
+def test_single_turn_interactive_matches_file_mode(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, problem_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    file_out = tmp_path / "file-out"
+    interactive_out = tmp_path / "interactive-out"
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["blux-coga", "run", "--input", str(problem_path), "--output-dir", str(file_out)],
+    )
+    cli.main()
+
+    responses = iter(["I might stay or go."])
+
+    def fake_input(_prompt: str) -> str:
+        try:
+            return next(responses)
+        except StopIteration as exc:
+            raise EOFError from exc
+
+    monkeypatch.setattr("builtins.input", fake_input)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["blux-coga", "run", "--interactive", "--output-dir", str(interactive_out)],
+    )
+    cli.main()
+    capsys.readouterr()
+
+    assert (file_out / "thought_artifact.json").read_text(encoding="utf-8") == (
+        interactive_out / "thought_artifact.json"
+    ).read_text(encoding="utf-8")
+    assert (file_out / "reasoning_verdict.json").read_text(encoding="utf-8") == (
+        interactive_out / "reasoning_verdict.json"
+    ).read_text(encoding="utf-8")

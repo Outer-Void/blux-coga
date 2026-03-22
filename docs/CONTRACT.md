@@ -1,8 +1,8 @@
 ## Contract
 
-Package release `blux-coga` 1.0.0 ships the engine identity `CogA-1.0-pro`.
-The contract consists of one input schema (`ProblemSpec`) and two emitted
-artifact schemas (`ThoughtArtifact` and `ReasoningVerdict`).
+Package release `blux-coga` 1.0.0 ships the frozen engine identity
+`CogA-1.0-pro`. The contract consists of one input schema (`ProblemSpec`) and
+two emitted output schemas (`ThoughtArtifact` and `ReasoningVerdict`).
 
 ### Input: ProblemSpec
 
@@ -50,5 +50,20 @@ artifact schemas (`ThoughtArtifact` and `ReasoningVerdict`).
   - `UNCLEAR`
   - `REFUSE`
 - `checks[]` is emitted in stable order.
-- `delta` is required for `UNCLEAR`, optional for `REFUSE`, and otherwise null.
-- `refusal` is required for `REFUSE` and otherwise null.
+- `delta` is required in the JSON object shape, contains an object for
+  `UNCLEAR`, may contain an object for `REFUSE`, and is otherwise `null`.
+- `refusal` is required in the JSON object shape, contains an object for
+  `REFUSE`, and is otherwise `null`.
+
+### Output metadata freeze
+
+Current run headers record only these metadata fields:
+
+- `input_hash`
+- `contract_version`
+- `model_version`
+- `reasoning_pack_id`
+- `reasoning_pack_version`
+- `schema_version`
+- optional `profile_id`
+- optional `profile_version`

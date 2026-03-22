@@ -1,9 +1,20 @@
 ## Non-directive boundaries
 
-CogA enforces a non-directive posture across all user-visible artifact fields,
-including `response_text`, `reflection`, `clarifications`, `observations`,
-`summary`, `acknowledgment`, contradiction payloads, option content, comparison
-content, and `delta.minimal_change`.
+CogA enforces a non-directive posture across all user-visible fields,
+including:
+
+- `ThoughtArtifact.response_text`
+- `ThoughtArtifact.reflection`
+- `ThoughtArtifact.clarifications[]`
+- `ThoughtArtifact.observations[]`
+- `ThoughtArtifact.acknowledgment`
+- `ThoughtArtifact.summary`
+- `ThoughtArtifact.contradiction`
+- `ThoughtArtifact.options[]`
+- `ThoughtArtifact.comparison`
+- `ReasoningVerdict.delta.minimal_change`
+- `ReasoningVerdict.refusal.category`
+- `ReasoningVerdict.refusal.detail`
 
 Blocked language includes direct prescriptions such as:
 

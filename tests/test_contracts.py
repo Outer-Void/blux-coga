@@ -43,3 +43,39 @@ def test_schema_validation():
 
     validate_schema(thought_schema, artifact.to_dict())
     validate_schema(verdict_schema, verdict.to_dict())
+
+
+def test_emitted_contract_shape_matches_frozen_fields():
+    artifact, verdict, _state = run_contract(
+        ProblemSpec.from_session_state("I might stay or go.", SessionState())
+    )
+
+    assert set(artifact.to_dict()) == {
+        "run_header",
+        "reflection",
+        "clarifications",
+        "observations",
+        "flags",
+        "contradiction",
+        "options",
+        "comparison",
+        "acknowledgment",
+        "summary",
+        "response_text",
+    }
+    assert set(verdict.to_dict()) == {
+        "run_header",
+        "status",
+        "checks",
+        "delta",
+        "refusal",
+    }
+    assert set(artifact.run_header.to_dict()) == {
+        "input_hash",
+        "contract_version",
+        "model_version",
+        "reasoning_pack_id",
+        "reasoning_pack_version",
+        "schema_version",
+    }
+    assert set(verdict.run_header.to_dict()) == set(artifact.run_header.to_dict())
