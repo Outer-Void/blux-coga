@@ -1,57 +1,56 @@
 # blux-coga
 
-BLUX-CogA is a contract-driven reasoning scaffold that focuses on non-directive
-boundary enforcement. Inputs are normalized and hashed deterministically, and
-outputs are emitted as structured JSON artifacts rather than free-form text.
+`blux-coga` 1.0.0 packages the BLUX CogA engine `CogA-1.0-pro` as a
+deterministic, file-first contract processor. It reads a `ProblemSpec` JSON
+input, applies the non-directive contract, and writes stable JSON artifacts.
 
-## Behavior overview
+## Canonical usage
 
-- **Contract-driven outputs:** JSON artifacts are emitted for thought artifacts
-  and reasoning verdicts.
-- **Determinism + hashing:** Normalized `ProblemSpec` inputs are hashed to ensure
-  deterministic, replayable outputs for the same input.
-- **Non-directive boundaries:** Output avoids prescriptive language ("you should",
-  "best approach", etc.).
-- **Stop / freeze:** Entering `stop` halts the session; entering `freeze` halts and
-  freezes intent state for the remainder of the session.
-- **CLI harness:** File-based input/output is the default; interactive REPL mode
-  is optional.
-
-## Usage
-
-Create a JSON `ProblemSpec` (see `schemas/problem.schema.json`) and run via the
-root runner scripts:
+The canonical harness path is file-based execution:
 
 ```bash
-./CogA.sh --in path/to/problem.json --out out/
+blux-coga run --input path/to/problem.json --output-dir out
 ```
 
-To select a deterministic profile:
-
-```bash
-./CogA.sh --profile cpu --in path/to/problem.json --out out/
-```
-
-You can also call the CLI directly:
+Compatibility aliases remain available:
 
 ```bash
 blux-coga --input path/to/problem.json --output-dir out
+./CogA.sh --in path/to/problem.json --out out
 ```
 
-This writes:
+File mode writes exactly:
 
 - `out/thought_artifact.json`
 - `out/reasoning_verdict.json`
 
-For interactive mode:
+Optional deterministic profile selection:
 
 ```bash
-blux-coga --interactive
+blux-coga run --profile cpu --input path/to/problem.json --output-dir out
 ```
+
+Optional interactive mode exists for manual local use. It reuses the same
+artifact filenames in the selected output directory, but it is not the
+canonical harness path:
+
+```bash
+blux-coga run --interactive --output-dir out
+```
+
+## Enforced behavior
+
+- Deterministic hashing of normalized `ProblemSpec` payloads.
+- Stable JSON serialization for all emitted artifacts and reports.
+- Non-directive boundary enforcement across all user-visible artifact fields.
+- Structured `COMPLETE`, `UNCLEAR`, and `REFUSE` verdicts.
+- Deterministic run headers containing contract, schema, reasoning-pack, and
+  optional profile metadata.
 
 ## Development
 
 ```bash
+python -m pip install -e .
 pytest
 ```
 

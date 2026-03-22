@@ -1,40 +1,54 @@
-## CogA Contract (Phase 10)
+## Contract
 
-CogA-1.0 produces deterministic, schema-validated artifacts for each turn. The
-contract consists of a single input type (`ProblemSpec`) and two output types:
-`ThoughtArtifact` and `ReasoningVerdict`.
+Package release `blux-coga` 1.0.0 ships the engine identity `CogA-1.0-pro`.
+The contract consists of one input schema (`ProblemSpec`) and two emitted
+artifact schemas (`ThoughtArtifact` and `ReasoningVerdict`).
 
 ### Input: ProblemSpec
 
 - Location: `schemas/problem.schema.json`
-- Payload: user input plus session state (history, intents, flags).
+- Required top-level fields: `user_input`, `session`
+- Session fields: `history`, `last_user_utterances`, `last_intent`,
+  `extracted_intent`, `extracted_constraints`, `stopped`, `frozen`
 
 ### Output: ThoughtArtifact
 
 - Location: `schemas/thought_artifact.schema.json`
-- Includes reflection, clarifications, observations, flags, contradiction
-  context, option artifacts, and the final response text.
-- Contains a `run_header` with:
+- Required fields:
+  - `run_header`
+  - `reflection`
+  - `clarifications[]`
+  - `observations[]`
+  - `flags`
+  - `contradiction`
+  - `options[]`
+  - `comparison`
+  - `acknowledgment`
+  - `summary`
+  - `response_text`
+- `run_header` always includes:
   - `input_hash`
   - `contract_version`
   - `model_version`
   - `reasoning_pack_id`
   - `reasoning_pack_version`
   - `schema_version`
-- Multi-option reasoning:
-  - `options[]` includes `{id, title, pros[], cons[], risks[], unknowns[]}`.
-  - `comparison` is optional (nullable) and includes `criteria[]` and `rows[]`
-    keyed by `option_id`.
+- `run_header` additionally includes `profile_id` and `profile_version` only
+  when a profile is selected.
 
 ### Output: ReasoningVerdict
 
 - Location: `schemas/reasoning_verdict.schema.json`
-- Status grammar:
+- Required fields:
+  - `run_header`
+  - `status`
+  - `checks[]`
+  - `delta`
+  - `refusal`
+- Status values:
   - `COMPLETE`
   - `UNCLEAR`
   - `REFUSE`
-- The `checks` list is stable-ordered.
-- `delta` is required for `UNCLEAR` and provides a minimal change needed to
-  move forward using a deterministic, structured prompt.
-- `refusal` is required for `REFUSE` and records a structured refusal category
-  and detail. `delta` only appears for `REFUSE` when a resolution path exists.
+- `checks[]` is emitted in stable order.
+- `delta` is required for `UNCLEAR`, optional for `REFUSE`, and otherwise null.
+- `refusal` is required for `REFUSE` and otherwise null.

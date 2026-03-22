@@ -269,7 +269,11 @@ def _artifact_from_state(
     return artifact, VerdictStatus.COMPLETE, None, flags, refusal
 
 
-def _check_non_directive(artifact: ThoughtArtifact) -> Check:
+def _check_non_directive(
+    artifact: ThoughtArtifact,
+    delta: Optional[Delta],
+    refusal: Optional[Refusal],
+) -> Check:
     texts = [
         artifact.reflection,
         artifact.response_text,
@@ -291,6 +295,11 @@ def _check_non_directive(artifact: ThoughtArtifact) -> Check:
         for row in artifact.comparison.rows:
             texts.append(row.option_id)
             texts.extend(row.values)
+    if delta:
+        texts.append(delta.minimal_change)
+    if refusal:
+        texts.append(refusal.category)
+        texts.append(refusal.detail)
     violation = any(has_violation(text) for text in texts if text)
     status = "PASS" if not violation else "FAIL"
     message = "Non-directive language enforced."
@@ -377,16 +386,6 @@ def _build_verdict(
     artifact: ThoughtArtifact,
     refusal: Optional[Refusal],
 ) -> ReasoningVerdict:
-    checks = [
-        _check_non_directive(artifact),
-        _check_stop_state(flags),
-        _check_freeze_state(flags),
-        _check_ambiguity(flags),
-        _check_contradiction(flags),
-    ]
-    refusal_check = _check_refusal_reason(refusal)
-    if refusal_check:
-        checks.append(refusal_check)
     delta = None
     if status == VerdictStatus.UNCLEAR:
         delta = Delta(
@@ -398,6 +397,16 @@ def _build_verdict(
         )
     if status == VerdictStatus.REFUSE and delta_message:
         delta = Delta(minimal_change=_sanitize_delta(delta_message))
+    checks = [
+        _check_non_directive(artifact, delta, refusal),
+        _check_stop_state(flags),
+        _check_freeze_state(flags),
+        _check_ambiguity(flags),
+        _check_contradiction(flags),
+    ]
+    refusal_check = _check_refusal_reason(refusal)
+    if refusal_check:
+        checks.append(refusal_check)
     return ReasoningVerdict(
         run_header=run_header,
         status=status,
