@@ -14,8 +14,10 @@ def test_run_header_backfills_missing_fields():
     assert header.schema_version == "unknown"
 
 
-def test_only_documented_legacy_cli_alias_is_supported():
+def test_only_canonical_cli_form_is_supported():
     parser = cli._build_parser()
-    args = parser.parse_args(["run", "--in", "problem.json", "--out", "out"])
+    args = parser.parse_args(
+        ["run", "--input", "problem.json", "--output-dir", "out"]
+    )
     assert str(args.input) == "problem.json"
     assert str(args.output_dir) == "out"

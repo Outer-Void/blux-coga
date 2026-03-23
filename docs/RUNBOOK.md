@@ -46,12 +46,6 @@ pytest
 blux-coga run --input path/to/problem.json --output-dir out
 ```
 
-### Legacy compatibility alias
-
-```bash
-blux-coga --input path/to/problem.json --output-dir out
-```
-
 ### Acceptance harness
 
 ```bash
