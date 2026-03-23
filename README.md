@@ -17,8 +17,7 @@ outputs.
 
 ## Canonical interface
 
-The canonical harness, dataset-alignment, export-preparation, and training
-handoff path is deterministic file mode:
+The frozen dataset, harness, and export interface is deterministic file mode:
 
 ```bash
 blux-coga run --input path/to/problem.json --output-dir out
@@ -33,27 +32,26 @@ The canonical input shape is `schemas/problem.schema.json`. The canonical output
 shapes are `schemas/thought_artifact.schema.json` and
 `schemas/reasoning_verdict.schema.json`.
 
-### Intentional compatibility aliases
+### Acceptance harness
 
-These compatibility entrypoints remain supported and resolve to the same
-runtime behavior:
-
-```bash
-blux-coga --input path/to/problem.json --output-dir out
-./CogA.sh run --in path/to/problem.json --out out
-```
-
-### Optional interactive inspection mode
-
-Interactive mode exists for manual local inspection only:
+The frozen acceptance interface is:
 
 ```bash
-blux-coga run --interactive --output-dir out
+blux-coga accept --fixtures path/to/fixtures --output-dir out
 ```
 
-It reuses the same contract engine and canonical filenames, but it is not the
-canonical harness surface. Each later turn overwrites the same two files in the
-selected output directory.
+It writes `report.json` plus one canonical artifact/verdict pair per fixture.
+
+## Removed non-canonical surface
+
+This freeze removes accidental or legacy CLI surface so dataset repositories can
+rely on one explicit command form:
+
+- removed top-level implicit run invocation such as `blux-coga --input ...`
+- removed `--in` and `--out` aliases
+- removed interactive CLI mode from the public interface
+
+Runner scripts now forward directly to the same canonical CLI contract.
 
 ## Deterministic metadata emitted on every run
 

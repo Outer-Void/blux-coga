@@ -13,7 +13,8 @@ directory at runtime.
 blux-coga accept --fixtures path/to/fixtures --output-dir path/to/out
 ```
 
-`--out` remains an intentional alias for `--output-dir`.
+This command is part of the frozen release contract. No short flag aliases are
+documented or supported.
 
 ### Output layout
 

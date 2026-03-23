@@ -2,18 +2,28 @@
 
 ### Frozen compatibility surface
 
-The supported legacy surface is intentionally limited to:
+The frozen support promise is intentionally narrow:
 
-- the top-level CLI alias `blux-coga --input ... --output-dir ...`, which maps
-  directly to `blux-coga run ...`
-- runner-script argument aliases `--in` and `--out`
-- acceptance-harness alias `--out` for `--output-dir`
+- canonical execution command: `blux-coga run --input <problem.json> --output-dir <out-dir>`
+- canonical acceptance command: `blux-coga accept --fixtures <fixtures-dir> --output-dir <out-dir>`
+- runner scripts that forward to those exact command forms
 - reading older run headers by backfilling missing `reasoning_pack_id`,
   `reasoning_pack_version`, and `schema_version` as `unknown`
 - leaving legacy profile metadata absent when an older header did not record it
 
 Anything else is outside the frozen support promise unless it is explicitly
 documented in this repository.
+
+### Removed accidental interface surface
+
+The frozen release does not support the following former conveniences:
+
+- top-level implicit run invocation such as `blux-coga --input ...`
+- `--in` / `--out` aliases
+- interactive CLI mode
+
+These were removed so dataset and harness integrations depend on one explicit,
+stable interface.
 
 ### Current run-header fields
 

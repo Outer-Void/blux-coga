@@ -11,5 +11,5 @@ The frozen release loads `reasoning_packs/default.json` and records its
 - version: `1.0`
 - description: `Deterministic baseline reasoning pack for CogA.`
 
-The pack records deterministic run provenance. It does not, by itself, change
-schema shape or output filenames.
+The pack records deterministic run provenance. It does not change schema shape,
+output filenames, or the canonical CLI.
