@@ -7,6 +7,9 @@ The frozen support promise is intentionally narrow:
 - canonical execution command: `blux-coga run --input <problem.json> --output-dir <out-dir>`
 - canonical acceptance command: `blux-coga accept --fixtures <fixtures-dir> --output-dir <out-dir>`
 - runner scripts that forward to those exact command forms
+- the internal Python `CogAThinker` wrapper for repository tests and embedded
+  callers, with no additional compatibility promise beyond the documented
+  contract processor output schema
 - reading older run headers by backfilling missing `reasoning_pack_id`,
   `reasoning_pack_version`, and `schema_version` as `unknown`
 - leaving legacy profile metadata absent when an older header did not record it
@@ -24,6 +27,13 @@ The frozen release does not support the following former conveniences:
 
 These were removed so dataset and harness integrations depend on one explicit,
 stable interface.
+
+### Internal API boundary
+
+`CogAThinker` is intentionally retained, but it is not the canonical freeze
+interface. It is treated as an internal convenience wrapper over the same
+deterministic contract processor. Dataset exports, fixture harnesses, and
+external automation should anchor to file-in/file-out CLI execution.
 
 ### Current run-header fields
 

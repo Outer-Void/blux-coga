@@ -10,3 +10,9 @@ carrying them forward behind a soft-deprecation promise.
 The remaining support promise is the documented canonical CLI, the documented
 acceptance command, the runner scripts that forward to them, and the run-header
 backfill behavior documented in `docs/COMPATIBILITY.md`.
+
+Explicitly retired in this freeze line:
+
+- top-level implicit run invocation
+- short aliases `--in` and `--out`
+- any public interactive CLI contract
