@@ -1,20 +1,20 @@
 ## Acceptance harness
 
-The acceptance harness replays `ProblemSpec` fixtures, validates the input and
+The acceptance harness replays `ProblemSpec` fixtures, validates input and
 output schemas, writes per-fixture artifacts, and emits a deterministic
 `report.json` summary.
 
-This repository does not ship a permanent fixture corpus. Provide a fixture
-directory at runtime.
+This harness is an internal module API (`blux_coga.io.acceptance.run_acceptance`)
+used by tests and CI checks. It is not a second public CLI contract.
 
-### CLI
+### Canonical interface alignment
 
-```bash
-blux-coga accept --fixtures path/to/fixtures --output-dir path/to/out
-```
+All fixture execution is anchored to the same canonical contract artifacts:
 
-This command is part of the frozen release contract. No short flag aliases are
-documented or supported.
+- input shape: `schemas/problem.schema.json`
+- output shapes: `schemas/thought_artifact.schema.json`,
+  `schemas/reasoning_verdict.schema.json`
+- canonical external invocation: `blux-coga run --input ... --output-dir ...`
 
 ### Output layout
 

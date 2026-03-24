@@ -72,6 +72,7 @@ def test_emitted_contract_shape_matches_frozen_fields():
     }
     assert set(artifact.run_header.to_dict()) == {
         "input_hash",
+        "run_hash",
         "contract_version",
         "model_version",
         "reasoning_pack_id",

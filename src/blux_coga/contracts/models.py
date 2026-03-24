@@ -87,6 +87,7 @@ class ProblemSpec:
 @dataclass(frozen=True)
 class RunHeader:
     input_hash: str
+    run_hash: str
     contract_version: str
     model_version: str
     reasoning_pack_id: str
@@ -99,6 +100,7 @@ class RunHeader:
     def from_dict(cls, payload: Dict[str, Any]) -> "RunHeader":
         return cls(
             input_hash=payload.get("input_hash", ""),
+            run_hash=payload.get("run_hash", payload.get("input_hash", "")),
             contract_version=payload.get("contract_version", ""),
             model_version=payload.get("model_version", ""),
             reasoning_pack_id=payload.get("reasoning_pack_id", "unknown"),
@@ -111,6 +113,7 @@ class RunHeader:
     def to_dict(self) -> Dict[str, str]:
         payload: Dict[str, str] = {
             "input_hash": self.input_hash,
+            "run_hash": self.run_hash,
             "contract_version": self.contract_version,
             "model_version": self.model_version,
             "reasoning_pack_id": self.reasoning_pack_id,

@@ -52,17 +52,7 @@ def test_parser_rejects_legacy_short_flag_aliases() -> None:
         parser.parse_args(["run", "--in", "problem.json", "--out", "out"])
 
 
-def test_accept_subcommand_requires_canonical_output_dir_flag() -> None:
-    parser = cli._build_parser()
-    args = parser.parse_args(
-        ["accept", "--fixtures", "fixtures", "--output-dir", "accept-out"]
-    )
-
-    assert str(args.fixtures) == "fixtures"
-    assert str(args.output_dir) == "accept-out"
-
-
-def test_accept_subcommand_rejects_legacy_output_dir_alias() -> None:
+def test_parser_rejects_non_canonical_accept_command() -> None:
     parser = cli._build_parser()
     with pytest.raises(SystemExit):
-        parser.parse_args(["accept", "--fixtures", "fixtures", "--out", "accept-out"])
+        parser.parse_args(["accept", "--fixtures", "fixtures", "--output-dir", "accept-out"])

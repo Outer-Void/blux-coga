@@ -8,6 +8,11 @@ if ($Args.Count -eq 0) {
     exit 1
 }
 
+if ($Args[0] -ne "run") {
+    Write-Host "Only canonical interface is supported: .\CogA.ps1 run --input <problem.json> --output-dir <out_dir> [--profile <id>|--profile-file <path>]"
+    exit 1
+}
+
 $pythonCmd = if (Get-Command py -ErrorAction SilentlyContinue) { @("py", "-3") } else { @("python") }
 
 if (-not (Test-Path ".venv")) {
