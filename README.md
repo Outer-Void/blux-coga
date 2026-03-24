@@ -70,6 +70,12 @@ python -m pip install -e .
 pytest
 ```
 
+Representative dataset-facing replay parity is covered by:
+
+```bash
+pytest tests/test_live_dataset_alignment.py
+```
+
 ## Documentation
 
 - `docs/CONTRACT.md`
