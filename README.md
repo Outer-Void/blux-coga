@@ -53,6 +53,13 @@ rely on one explicit command form:
 
 Runner scripts now forward directly to the same canonical CLI contract.
 
+## Retained non-canonical internals (not freeze contract)
+
+The Python stateful wrapper (`CogAThinker`) remains available for internal
+tests and embedding. It uses the same contract processor but is not a frozen
+dataset/export integration surface. Freeze-sensitive integrations should use
+only the canonical file-mode CLI.
+
 ## Deterministic metadata emitted on every run
 
 Both output files include `run_header` metadata with:

@@ -29,5 +29,4 @@ raise SystemExit(0 if "dev" in extras else 1)
 $installTarget = if ($LASTEXITCODE -eq 0) { ".[dev]" } else { "." }
 
 & $venvPython -m pip install -e $installTarget
-$forwardArgs = $Args
 & $venvPython -m blux_coga @Args

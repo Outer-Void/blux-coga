@@ -24,8 +24,17 @@ both output `run_header` blocks.
 ### Determinism boundary
 
 Determinism is defined for the canonical file-based interface and acceptance
-harness. Interactive mode uses the same engine, but later turns intentionally
-overwrite the same output filenames in the chosen directory.
+harness. The internal stateful Python wrapper (`CogAThinker`) uses the same
+deterministic processor, but it is not a canonical freeze integration surface.
+External integrations should anchor to file mode output files.
+
+### Export anchoring hashes
+
+- `run_header.input_hash` is the canonical hash of normalized `ProblemSpec`
+  input.
+- A deterministic run artifact hash can be derived as SHA-256 over canonical
+  `thought_artifact.json` bytes (or `reasoning_verdict.json` bytes) produced by
+  stable serialization.
 
 Implementation: `src/blux_coga/contracts/determinism.py` and
 `src/blux_coga/contracts/processor.py`.

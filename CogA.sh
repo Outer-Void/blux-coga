@@ -31,5 +31,4 @@ then
 fi
 
 python -m pip install -e "$INSTALL_TARGET"
-ARGS=("$@")
 python -m blux_coga "$@"

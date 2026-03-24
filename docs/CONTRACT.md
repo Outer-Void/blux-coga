@@ -10,6 +10,10 @@ The contract surface is:
 - one input schema: `ProblemSpec`
 - two output schemas: `ThoughtArtifact` and `ReasoningVerdict`
 
+`python -m blux_coga` and `CogAThinker` can still call this contract processor,
+but they are not independent frozen interfaces and should not be treated as
+separate integration contracts.
+
 ### Input: `ProblemSpec`
 
 Location: `schemas/problem.schema.json`

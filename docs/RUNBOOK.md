@@ -51,3 +51,10 @@ blux-coga run --input path/to/problem.json --output-dir out
 ```bash
 blux-coga accept --fixtures path/to/fixtures --output-dir out
 ```
+
+### Freeze anchoring note
+
+- Treat `blux-coga run --input ... --output-dir ...` as the authoritative
+  integration path for datasets/exports.
+- Use `run_header.input_hash` plus optional SHA-256 of emitted canonical output
+  files when anchoring training/export manifests.
