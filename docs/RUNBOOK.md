@@ -21,3 +21,14 @@ blux-coga run --input path/to/problem.json --output-dir out
   integration path for datasets/exports/training anchors.
 - Use `run_header.input_hash` and `run_header.run_hash` when anchoring
   manifests; emitted output JSON is byte-stable for identical input/profile/pack.
+
+### Dataset replay verification
+
+Run the representative live dataset fixture replay:
+
+```bash
+pytest tests/test_live_dataset_alignment.py
+```
+
+This replays frozen fixture families and checks exact parity against
+`tests/fixtures/live_dataset_cases_expected/`.

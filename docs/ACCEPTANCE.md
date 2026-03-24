@@ -7,6 +7,29 @@ output schemas, writes per-fixture artifacts, and emits a deterministic
 This harness is an internal module API (`blux_coga.io.acceptance.run_acceptance`)
 used by tests and CI checks. It is not a second public CLI contract.
 
+### Dataset-facing fixture freeze
+
+This repository now ships a frozen replay set under:
+
+- `tests/fixtures/live_dataset_cases/*.json` (input `ProblemSpec` fixtures)
+- `tests/fixtures/live_dataset_cases_expected/<case>/*.json` (canonical outputs)
+
+The fixture families cover representative live-harness mismatch classes:
+
+- ambiguous
+- assumptions
+- contradiction
+- options
+- comparison
+- unclear minimal delta
+- non-directive regression
+- stop/freeze
+- tie breaker
+
+`tests/test_live_dataset_alignment.py` replays these fixtures through the live
+contract processor and asserts exact match with frozen expected
+`thought_artifact.json` and `reasoning_verdict.json` outputs.
+
 ### Canonical interface alignment
 
 All fixture execution is anchored to the same canonical contract artifacts:
