@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 
 import re
 
-from blux_coga.contracts.determinism import stable_hash
+from blux_coga.contracts.determinism import stable_hash, stable_hash_payload
 from blux_coga.contracts.models import (
     Check,
     ComparisonMatrix,
@@ -338,8 +338,22 @@ def run_contract(
     profile: ProfileSpec | None = None,
 ) -> Tuple[ThoughtArtifact, ReasoningVerdict, SessionState]:
     reasoning_pack = _load_reasoning_pack()
+    input_hash = stable_hash(problem_spec)
+    run_hash = stable_hash_payload(
+        {
+            "input_hash": input_hash,
+            "contract_version": CONTRACT_VERSION,
+            "model_version": MODEL_VERSION,
+            "reasoning_pack_id": reasoning_pack.pack_id,
+            "reasoning_pack_version": reasoning_pack.version,
+            "schema_version": SCHEMA_VERSION,
+            "profile_id": profile.profile_id if profile else None,
+            "profile_version": profile.profile_version if profile else None,
+        }
+    )
     run_header = RunHeader(
-        input_hash=stable_hash(problem_spec),
+        input_hash=input_hash,
+        run_hash=run_hash,
         contract_version=CONTRACT_VERSION,
         model_version=MODEL_VERSION,
         reasoning_pack_id=reasoning_pack.pack_id,

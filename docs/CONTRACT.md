@@ -6,7 +6,6 @@ The frozen release is package `blux-coga` 1.0.0 with runtime identity
 The contract surface is:
 
 - one canonical execution command: `blux-coga run --input <problem.json> --output-dir <out-dir>`
-- one acceptance command: `blux-coga accept --fixtures <fixtures-dir> --output-dir <out-dir>`
 - one input schema: `ProblemSpec`
 - two output schemas: `ThoughtArtifact` and `ReasoningVerdict`
 
@@ -80,6 +79,7 @@ No additional fields are emitted.
 Current outputs record these run-header fields:
 
 - `input_hash`
+- `run_hash`
 - `contract_version`
 - `model_version`
 - `reasoning_pack_id`
@@ -89,13 +89,3 @@ Current outputs record these run-header fields:
 - optional `profile_version`
 
 `profile_id` and `profile_version` are omitted when no profile is selected.
-
-### Stable field rules
-
-- `checks` is emitted in stable order.
-- `delta` is always present in the JSON object shape; it is an object for
-  `UNCLEAR`, may be an object for `REFUSE`, and is otherwise `null`.
-- `refusal` is always present in the JSON object shape; it is an object for
-  `REFUSE` and otherwise `null`.
-- Schema, model code, canonical CLI file mode, and acceptance outputs are
-  expected to match this contract exactly in the frozen release.

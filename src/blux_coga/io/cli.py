@@ -12,7 +12,6 @@ from blux_coga.contracts.determinism import stable_json_dumps
 from blux_coga.core.constants import PACKAGE_NAME, PACKAGE_VERSION
 from blux_coga.contracts.models import ProblemSpec
 from blux_coga.core.thinker import CogAThinker
-from blux_coga.io.acceptance import run_acceptance
 from blux_coga.profiles import load_profile_by_id, load_profile_from_path
 
 
@@ -67,25 +66,6 @@ def _build_parser() -> argparse.ArgumentParser:
         allow_abbrev=False,
     )
     _build_run_parser(run_parser)
-
-    accept_parser = subparsers.add_parser(
-        "accept",
-        help="Replay acceptance fixtures and write deterministic reports.",
-        allow_abbrev=False,
-    )
-    accept_parser.add_argument(
-        "--fixtures",
-        type=Path,
-        required=True,
-        help="Directory containing ProblemSpec fixture files.",
-    )
-    accept_parser.add_argument(
-        "--output-dir",
-        dest="output_dir",
-        type=Path,
-        required=True,
-        help="Directory for acceptance outputs.",
-    )
     return parser
 
 
@@ -121,9 +101,6 @@ def main() -> None:
 
     if args.command == "run":
         _run_file_mode(args)
-        return
-    if args.command == "accept":
-        run_acceptance(args.fixtures, args.output_dir)
         return
     raise SystemExit(f"Unknown command: {args.command}")
 

@@ -10,6 +10,7 @@ def test_run_header_backfills_missing_fields():
     }
     header = RunHeader.from_dict(legacy_payload)
     assert header.input_hash == "hash"
+    assert header.run_hash == "hash"
     assert header.reasoning_pack_id == "unknown"
     assert header.schema_version == "unknown"
 

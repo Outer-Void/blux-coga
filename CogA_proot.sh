@@ -6,6 +6,11 @@ if [ "$#" -eq 0 ]; then
   exit 1
 fi
 
+if [ "${1:-}" != "run" ]; then
+  echo "Only canonical interface is supported: ./CogA_proot.sh run --input <problem.json> --output-dir <out_dir> [--profile <id>|--profile-file <path>]"
+  exit 1
+fi
+
 sudo apt update && sudo apt install -y python3 python3-venv python3-pip git
 
 if [ ! -d ".venv" ]; then

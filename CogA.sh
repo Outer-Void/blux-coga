@@ -6,6 +6,11 @@ if [ "$#" -eq 0 ]; then
   exit 1
 fi
 
+if [ "${1:-}" != "run" ]; then
+  echo "Only canonical interface is supported: ./CogA.sh run --input <problem.json> --output-dir <out_dir> [--profile <id>|--profile-file <path>]"
+  exit 1
+fi
+
 PYTHON_BIN="python3"
 if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   PYTHON_BIN="python"
