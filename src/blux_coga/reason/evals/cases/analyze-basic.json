@@ -1,0 +1,73 @@
+{
+  "claims": [
+    {
+      "contradicted_by": [
+        "E3"
+      ],
+      "id": "C1",
+      "statement": "The service handles 2k rps",
+      "supported_by": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "id": "C2",
+      "statement": "Traffic will be 2k rps",
+      "supported_by": [
+        "E4"
+      ]
+    },
+    {
+      "depends_on": [
+        "C1",
+        "C2"
+      ],
+      "id": "C3",
+      "statement": "The service is ready",
+      "supported_by": [
+        "E1"
+      ]
+    }
+  ],
+  "contract": "coga.request",
+  "evidence": [
+    {
+      "claim": "Load test at 2k rps passed",
+      "id": "E1",
+      "kind": "measurement",
+      "source": {
+        "dataset": {
+          "dataset_id": "blux-coga-evals",
+          "record_id": "perf-42",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "version": "2.0.0"
+        },
+        "uri": "ci://perf/42"
+      }
+    },
+    {
+      "claim": "Vendor says it scales",
+      "id": "E2",
+      "kind": "testimony",
+      "source": {
+        "uri": "https://vendor.example/claims"
+      }
+    },
+    {
+      "claim": "Prod incident at 1.5k rps",
+      "id": "E3",
+      "kind": "observation",
+      "source": {
+        "uri": "pager://incident/7"
+      }
+    },
+    {
+      "claim": "We assume traffic doubles",
+      "id": "E4",
+      "kind": "assumption"
+    }
+  ],
+  "question": "Is the service ready for launch?",
+  "version": 1
+}

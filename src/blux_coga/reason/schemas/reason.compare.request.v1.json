@@ -1,0 +1,263 @@
+{
+  "$defs": {
+    "claim": {
+      "additionalProperties": false,
+      "properties": {
+        "contradicted_by": {
+          "$ref": "#/$defs/ids"
+        },
+        "depends_on": {
+          "$ref": "#/$defs/ids"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "supported_by": {
+          "$ref": "#/$defs/ids"
+        }
+      },
+      "required": [
+        "id",
+        "statement"
+      ],
+      "type": "object"
+    },
+    "criterion": {
+      "additionalProperties": false,
+      "properties": {
+        "direction": {
+          "enum": [
+            "max",
+            "min"
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "weight",
+        "direction"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "maxLength": 64,
+          "type": "string"
+        },
+        "claim": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "observation",
+            "measurement",
+            "document",
+            "testimony",
+            "assumption",
+            "dataset"
+          ]
+        },
+        "reliability": {
+          "$ref": "#/$defs/unit"
+        },
+        "source": {
+          "additionalProperties": false,
+          "properties": {
+            "dataset": {
+              "additionalProperties": false,
+              "properties": {
+                "dataset_id": {
+                  "pattern": "^[a-z0-9][a-z0-9_.-]{0,127}$",
+                  "type": "string"
+                },
+                "record_id": {
+                  "maxLength": 256,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "version": {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "dataset_id",
+                "version",
+                "record_id"
+              ],
+              "type": "object"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "uri": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "claim"
+      ],
+      "type": "object"
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$",
+      "type": "string"
+    },
+    "ids": {
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "maxItems": 1000,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "option": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ids"
+          },
+          "maxProperties": 100,
+          "type": "object"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "values": {
+          "additionalProperties": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "maxProperties": 100,
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "task": {
+      "additionalProperties": false,
+      "properties": {
+        "depends_on": {
+          "$ref": "#/$defs/ids"
+        },
+        "effort": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "type": "number"
+        },
+        "evidence": {
+          "$ref": "#/$defs/ids"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "text": {
+      "maxLength": 4000,
+      "type": "string"
+    },
+    "unit": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "$id": "urn:outervoid:coga:reason.compare:request:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Weighted multi-criteria comparison: normalized matrix, totals, Pareto front, dominance, weight sensitivity.",
+  "properties": {
+    "contract": {
+      "const": "coga.request"
+    },
+    "criteria": {
+      "items": {
+        "$ref": "#/$defs/criterion"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "maxItems": 1000,
+      "minItems": 0,
+      "type": "array"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/option"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "type": "array"
+    },
+    "question": {
+      "$ref": "#/$defs/text"
+    },
+    "version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "contract",
+    "version",
+    "options",
+    "criteria"
+  ],
+  "title": "reason.compare request (coga.request v1)",
+  "type": "object"
+}

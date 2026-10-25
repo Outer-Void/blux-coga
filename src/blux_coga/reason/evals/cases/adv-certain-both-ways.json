@@ -1,0 +1,28 @@
+{
+  "claims": [
+    {
+      "contradicted_by": [
+        "N"
+      ],
+      "id": "C",
+      "statement": "c",
+      "supported_by": [
+        "P"
+      ]
+    }
+  ],
+  "contract": "coga.request",
+  "evidence": [
+    {
+      "claim": "p",
+      "id": "P",
+      "reliability": 1
+    },
+    {
+      "claim": "n",
+      "id": "N",
+      "reliability": 1
+    }
+  ],
+  "version": 1
+}

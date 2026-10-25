@@ -1,0 +1,340 @@
+{
+  "cases": [
+    {
+      "capability": "reason.analyze",
+      "expect": {
+        "artifact_id": "830aa4a259d557232e1d6148dac50d792646b032a343f7bda62dfb971c26d215"
+      },
+      "id": "analyze-basic",
+      "kind": "regression",
+      "request": "cases/analyze-basic.json"
+    },
+    {
+      "capability": "reason.compare",
+      "expect": {
+        "artifact_id": "41389b980d6675a24081582c60edcc17cf20908b1512c940cfb6e56e6d036969"
+      },
+      "id": "compare-basic",
+      "kind": "regression",
+      "request": "cases/compare-basic.json"
+    },
+    {
+      "capability": "reason.critique",
+      "expect": {
+        "artifact_id": "a7d3718a0ca1da22b77f3da9532469e9e4cdd1aa7fb9c8a57feda5e12a3682dc"
+      },
+      "id": "critique-basic",
+      "kind": "regression",
+      "request": "cases/critique-basic.json"
+    },
+    {
+      "capability": "reason.decompose",
+      "expect": {
+        "artifact_id": "c37074f434157d80d9a86e50d1cc72cdaeb6e6c77267accc1e956fdaf5f43798"
+      },
+      "id": "decompose-basic",
+      "kind": "regression",
+      "request": "cases/decompose-basic.json"
+    },
+    {
+      "capability": "reason.plan",
+      "expect": {
+        "artifact_id": "5a4cc0a9d93c039e9ed444cd6707ac0371129a264c4c17b345b05c0517b33da7"
+      },
+      "id": "plan-basic",
+      "kind": "regression",
+      "request": "cases/plan-basic.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "artifact_id": "9477d13f51588fde47c92177185d21b8af69ed3197d9b748464dbeeaf29b5350"
+      },
+      "id": "rank-pairwise",
+      "kind": "regression",
+      "request": "cases/rank-pairwise.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "artifact_id": "463424816749c4ba52cd51986da453af8451581576c571fb9f985723a6421129"
+      },
+      "id": "rank-scores",
+      "kind": "regression",
+      "request": "cases/rank-scores.json"
+    },
+    {
+      "capability": "reason.risk",
+      "expect": {
+        "artifact_id": "bca27f1b9eba589f2181d429b6da685ef5e73eaf01990cf7f47062df8c32836c"
+      },
+      "id": "risk-basic",
+      "kind": "regression",
+      "request": "cases/risk-basic.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-both-and-neither-mode",
+      "kind": "adversarial",
+      "request": "cases/adv-both-and-neither-mode.json"
+    },
+    {
+      "capability": "reason.analyze",
+      "expect": {
+        "result": {
+          "/confidence/value": 0.0,
+          "/result/claims/0/status": "contested"
+        }
+      },
+      "id": "adv-certain-both-ways",
+      "kind": "adversarial",
+      "request": "cases/adv-certain-both-ways.json"
+    },
+    {
+      "capability": "reason.analyze",
+      "expect": {
+        "error": "DEPENDENCY_CYCLE"
+      },
+      "id": "adv-circular-claims-analyze",
+      "kind": "adversarial",
+      "request": "cases/adv-circular-claims-analyze.json"
+    },
+    {
+      "capability": "reason.critique",
+      "expect": {
+        "result": {
+          "/result/findings/0/rule": "CR005"
+        }
+      },
+      "id": "adv-circular-claims-critique",
+      "kind": "adversarial",
+      "request": "cases/adv-circular-claims-critique.json"
+    },
+    {
+      "capability": "reason.plan",
+      "expect": {
+        "error": "DUPLICATE_ID"
+      },
+      "id": "adv-duplicate-ids",
+      "kind": "adversarial",
+      "request": "cases/adv-duplicate-ids.json"
+    },
+    {
+      "capability": "reason.analyze",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-hidden-reasoning-field",
+      "kind": "adversarial",
+      "request": "cases/adv-hidden-reasoning-field.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-homoglyph-id",
+      "kind": "adversarial",
+      "request": "cases/adv-homoglyph-id.json"
+    },
+    {
+      "capability": "reason.risk",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-infinity",
+      "kind": "adversarial",
+      "request": "cases/adv-infinity.json"
+    },
+    {
+      "capability": "reason.compare",
+      "expect": {
+        "result": {
+          "/result": {
+            "criteria": [
+              {
+                "direction": "min",
+                "id": "cost",
+                "weight": 1.0
+              },
+              {
+                "direction": "max",
+                "id": "fit",
+                "weight": 2.0
+              },
+              {
+                "direction": "max",
+                "id": "ops",
+                "weight": 1.0
+              }
+            ],
+            "dominance": [
+              {
+                "dominates": "mongo",
+                "option_id": "dyn"
+              }
+            ],
+            "leaders": [
+              "dyn"
+            ],
+            "margin": 0.166667,
+            "matrix": [
+              {
+                "normalized": {
+                  "cost": 1.0,
+                  "fit": 0.333333,
+                  "ops": 1.0
+                },
+                "option_id": "dyn",
+                "values": {
+                  "cost": 2,
+                  "fit": 3,
+                  "ops": 5
+                }
+              },
+              {
+                "normalized": {
+                  "cost": 1.0,
+                  "fit": 0.0,
+                  "ops": 0.333333
+                },
+                "option_id": "mongo",
+                "values": {
+                  "cost": 2,
+                  "fit": 2,
+                  "ops": 3
+                }
+              },
+              {
+                "normalized": {
+                  "cost": 0.0,
+                  "fit": 1.0,
+                  "ops": 0.0
+                },
+                "option_id": "pg",
+                "values": {
+                  "cost": 3,
+                  "fit": 5,
+                  "ops": 2
+                }
+              }
+            ],
+            "pareto_front": [
+              "dyn",
+              "pg"
+            ],
+            "ranking": [
+              {
+                "coverage": 1.0,
+                "option_id": "dyn",
+                "rank": 1,
+                "score": 0.666667
+              },
+              {
+                "coverage": 1.0,
+                "option_id": "pg",
+                "rank": 2,
+                "score": 0.5
+              },
+              {
+                "coverage": 1.0,
+                "option_id": "mongo",
+                "rank": 3,
+                "score": 0.333333
+              }
+            ],
+            "sensitivity": {
+              "flips": [
+                {
+                  "criterion": "fit",
+                  "leaders": [
+                    "dyn",
+                    "pg"
+                  ],
+                  "weight_factor": 1.5
+                }
+              ],
+              "stable": false
+            }
+          }
+        }
+      },
+      "id": "adv-injection-does-not-move-result",
+      "kind": "adversarial",
+      "request": "cases/adv-injection-does-not-move-result.json"
+    },
+    {
+      "capability": "reason.compare",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-nan",
+      "kind": "adversarial",
+      "request": "cases/adv-nan.json"
+    },
+    {
+      "capability": "reason.compare",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-negative-weight",
+      "kind": "adversarial",
+      "request": "cases/adv-negative-weight.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-oversized-list",
+      "kind": "adversarial",
+      "request": "cases/adv-oversized-list.json"
+    },
+    {
+      "capability": "reason.plan",
+      "expect": {
+        "error": "DEPENDENCY_CYCLE"
+      },
+      "id": "adv-plan-cycle",
+      "kind": "adversarial",
+      "request": "cases/adv-plan-cycle.json"
+    },
+    {
+      "capability": "reason.rank",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-self-comparison",
+      "kind": "adversarial",
+      "request": "cases/adv-self-comparison.json"
+    },
+    {
+      "capability": "reason.analyze",
+      "expect": {
+        "error": "UNKNOWN_REFERENCE"
+      },
+      "id": "adv-unknown-reference",
+      "kind": "adversarial",
+      "request": "cases/adv-unknown-reference.json"
+    },
+    {
+      "capability": "reason.plan",
+      "expect": {
+        "error": "INVALID_REQUEST"
+      },
+      "id": "adv-wrong-contract",
+      "kind": "adversarial",
+      "request": "cases/adv-wrong-contract.json"
+    }
+  ],
+  "contract": "coga.eval-suite",
+  "dataset": {
+    "dataset_id": "blux-coga-evals",
+    "version": "2.0.0"
+  },
+  "suite_id": "coga-2-core",
+  "version": 1
+}

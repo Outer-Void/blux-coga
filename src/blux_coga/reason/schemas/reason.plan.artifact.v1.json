@@ -1,0 +1,221 @@
+{
+  "$id": "urn:outervoid:coga:reason.plan:artifact:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "An explicit, deterministic reasoning structure; never hidden chain-of-thought.",
+  "properties": {
+    "artifact_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "capability": {
+      "const": "reason.plan"
+    },
+    "confidence": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "value": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "basis"
+      ],
+      "type": "object"
+    },
+    "contract": {
+      "const": "coga.artifact"
+    },
+    "dataset": {
+      "items": {
+        "properties": {
+          "dataset_id": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "version",
+          "record_id",
+          "evidence_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "engine": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "pattern": "^reason\\.[a-z]+/[0-9]+$",
+          "type": "string"
+        },
+        "deterministic": {
+          "const": true
+        },
+        "name": {
+          "const": "coga"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "algorithm",
+        "deterministic"
+      ],
+      "type": "object"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "severity": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "input_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "linkage": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "question": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "replay": {
+      "properties": {
+        "deterministic": {
+          "const": true
+        }
+      },
+      "required": [
+        "engine_version",
+        "algorithm",
+        "input_sha256",
+        "artifact_id",
+        "deterministic"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "type": "object"
+    },
+    "uncertainty": {
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "sources": {
+          "items": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "refs": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "severity": {
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "level",
+        "sources"
+      ],
+      "type": "object"
+    },
+    "version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "contract",
+    "version",
+    "engine",
+    "capability",
+    "artifact_id",
+    "input_sha256",
+    "result",
+    "evidence_refs",
+    "confidence",
+    "uncertainty",
+    "findings",
+    "dataset",
+    "replay",
+    "linkage"
+  ],
+  "title": "coga.artifact v1 for reason.plan",
+  "type": "object"
+}

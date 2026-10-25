@@ -1,0 +1,13 @@
+# Default policy for running CogA through BLUX. Every reason.* capability is side-effect free (it reads only
+# its input and writes nothing), so every actor may call it.
+contract: blux.policy
+contract_version: "1.0"
+policy_id: coga-default
+default_effect: deny
+rules:
+  - rule_id: allow-reasoning
+    effect: allow
+    capabilities: ["reason.*"]
+    actor_types: [user, service, agent]
+    max_side_effects: none
+    grants: []

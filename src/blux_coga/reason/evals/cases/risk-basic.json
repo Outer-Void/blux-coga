@@ -1,0 +1,52 @@
+{
+  "appetite": 1.5,
+  "contract": "coga.request",
+  "evidence": [
+    {
+      "claim": "2 outages last year",
+      "id": "E1",
+      "kind": "observation"
+    }
+  ],
+  "risks": [
+    {
+      "evidence": [
+        "E1"
+      ],
+      "id": "outage",
+      "impact": 5,
+      "likelihood": 0.4,
+      "mitigations": [
+        {
+          "applies_to": "impact",
+          "evidence": [
+            "E1"
+          ],
+          "id": "multi",
+          "reduction": 0.5
+        }
+      ],
+      "title": "Region outage"
+    },
+    {
+      "id": "vendor",
+      "impact": 3,
+      "likelihood": 0.6,
+      "mitigations": [
+        {
+          "applies_to": "likelihood",
+          "id": "abstraction",
+          "reduction": 0.3
+        }
+      ],
+      "title": "Vendor lock-in"
+    },
+    {
+      "id": "typo",
+      "impact": 0.5,
+      "likelihood": 0.9,
+      "title": "Typo in docs"
+    }
+  ],
+  "version": 1
+}

@@ -32,3 +32,6 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# CI checkout of blux-coga-dataset
+_dataset/

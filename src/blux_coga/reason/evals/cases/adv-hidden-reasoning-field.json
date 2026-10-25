@@ -1,0 +1,11 @@
+{
+  "claims": [
+    {
+      "id": "C",
+      "statement": "x"
+    }
+  ],
+  "contract": "coga.request",
+  "hidden_reasoning": "model thoughts",
+  "version": 1
+}

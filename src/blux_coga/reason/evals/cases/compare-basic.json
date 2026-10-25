@@ -1,0 +1,51 @@
+{
+  "contract": "coga.request",
+  "criteria": [
+    {
+      "direction": "min",
+      "id": "cost",
+      "weight": 1
+    },
+    {
+      "direction": "max",
+      "id": "ops",
+      "weight": 1
+    },
+    {
+      "direction": "max",
+      "id": "fit",
+      "weight": 2
+    }
+  ],
+  "options": [
+    {
+      "id": "pg",
+      "title": "Postgres",
+      "values": {
+        "cost": 3,
+        "fit": 5,
+        "ops": 2
+      }
+    },
+    {
+      "id": "dyn",
+      "title": "DynamoDB",
+      "values": {
+        "cost": 2,
+        "fit": 3,
+        "ops": 5
+      }
+    },
+    {
+      "id": "mongo",
+      "title": "Mongo",
+      "values": {
+        "cost": 2,
+        "fit": 2,
+        "ops": 3
+      }
+    }
+  ],
+  "question": "Which datastore?",
+  "version": 1
+}

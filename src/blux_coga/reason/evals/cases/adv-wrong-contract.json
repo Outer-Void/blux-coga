@@ -1,0 +1,10 @@
+{
+  "contract": "coga.artifact",
+  "tasks": [
+    {
+      "id": "a",
+      "title": "A"
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,20 @@
+{
+  "contract": "coga.request",
+  "tasks": [
+    {
+      "depends_on": [
+        "b"
+      ],
+      "id": "a",
+      "title": "A"
+    },
+    {
+      "depends_on": [
+        "a"
+      ],
+      "id": "b",
+      "title": "B"
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,32 @@
+{
+  "claims": [
+    {
+      "depends_on": [
+        "B"
+      ],
+      "id": "A",
+      "statement": "A because B",
+      "supported_by": [
+        "E"
+      ]
+    },
+    {
+      "depends_on": [
+        "A"
+      ],
+      "id": "B",
+      "statement": "B because A",
+      "supported_by": [
+        "E"
+      ]
+    }
+  ],
+  "contract": "coga.request",
+  "evidence": [
+    {
+      "claim": "e",
+      "id": "E"
+    }
+  ],
+  "version": 1
+}

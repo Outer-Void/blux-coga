@@ -1,0 +1,14 @@
+{
+  "contract": "coga.request",
+  "tasks": [
+    {
+      "id": "t",
+      "title": "one"
+    },
+    {
+      "id": "t",
+      "title": "two"
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,47 @@
+{
+  "contract": "coga.request",
+  "goal": {
+    "acceptance": [
+      {
+        "covered_by": [
+          "signup"
+        ],
+        "id": "A1",
+        "statement": "Users can sign up"
+      },
+      {
+        "id": "A2",
+        "statement": "Billing works"
+      }
+    ],
+    "statement": "Launch"
+  },
+  "items": [
+    {
+      "id": "web",
+      "statement": "Web app"
+    },
+    {
+      "id": "signup",
+      "parent": "web",
+      "statement": "Sign-up flow"
+    },
+    {
+      "id": "ui",
+      "parent": "web",
+      "statement": "Theme"
+    },
+    {
+      "depends_on": [
+        "web"
+      ],
+      "id": "ops",
+      "statement": "Runbooks"
+    },
+    {
+      "id": "misc",
+      "statement": "Swag"
+    }
+  ],
+  "version": 1
+}

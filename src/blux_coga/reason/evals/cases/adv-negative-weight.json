@@ -1,0 +1,17 @@
+{
+  "contract": "coga.request",
+  "criteria": [
+    {
+      "direction": "max",
+      "id": "c",
+      "weight": -1
+    }
+  ],
+  "options": [
+    {
+      "id": "a",
+      "title": "A"
+    }
+  ],
+  "version": 1
+}

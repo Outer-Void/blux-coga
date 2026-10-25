@@ -1,0 +1,18 @@
+{
+  "contract": "coga.request",
+  "items": [
+    {
+      "id": "x",
+      "score": 3
+    },
+    {
+      "id": "y",
+      "score": 7
+    },
+    {
+      "id": "z",
+      "score": 3
+    }
+  ],
+  "version": 1
+}

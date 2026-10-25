@@ -1,0 +1,41 @@
+{
+  "comparisons": [
+    {
+      "loser": "b",
+      "winner": "a"
+    },
+    {
+      "loser": "c",
+      "winner": "a"
+    },
+    {
+      "loser": "c",
+      "weight": 2,
+      "winner": "b"
+    },
+    {
+      "loser": "a",
+      "winner": "d"
+    },
+    {
+      "loser": "d",
+      "winner": "c"
+    }
+  ],
+  "contract": "coga.request",
+  "items": [
+    {
+      "id": "a"
+    },
+    {
+      "id": "b"
+    },
+    {
+      "id": "c"
+    },
+    {
+      "id": "d"
+    }
+  ],
+  "version": 1
+}

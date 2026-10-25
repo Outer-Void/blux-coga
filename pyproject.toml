@@ -4,17 +4,53 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "blux-coga"
-version = "1.0.0"
-description = "Deterministic BLUX CogA contract processor for file-based reasoning artifacts"
+version = "2.0.0"
+description = "CogA: BLUX's deterministic structured reasoning engine (explicit artifacts, no model, no hidden chain-of-thought)"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{name = "Outer-Void / Justadudeinspace (JADIS)"}]
+# Licence unchanged from the existing LICENSE file (proprietary); any change is an owner decision.
 license = {text = "BLUX Proprietary License"}
+# No runtime dependencies.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "jsonschema>=4.20", "ruff>=0.6", "mypy>=1.10", "build>=1.2"]
 
 [project.scripts]
+coga = "blux_coga.reason.cli:main"
+# Frozen CogA 1.0 contract (blux-coga-dataset replays it byte-for-byte).
 blux-coga = "blux_coga.io.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"blux_coga.reason" = ["schemas/*.json", "evals/*.json", "evals/cases/*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+# Lint and strict typing cover the CogA 2 engine. The CogA 1.0 modules are frozen and left as they are.
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+include = ["src/blux_coga/reason/**/*.py", "tests/reason/**/*.py", "scripts/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "A", "BLE", "RUF", "SIM", "PL", "C4", "N"]
+ignore = ["PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLC0415", "S101", "S603", "S607", "PLR1714"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "PLR", "BLE", "PLW1510", "N"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["blux_coga"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+mypy_path = ["src"]
+packages = ["blux_coga.reason"]

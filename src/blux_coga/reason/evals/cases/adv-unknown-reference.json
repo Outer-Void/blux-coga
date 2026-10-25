@@ -1,0 +1,13 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "statement": "x",
+      "supported_by": [
+        "NOPE"
+      ]
+    }
+  ],
+  "contract": "coga.request",
+  "version": 1
+}

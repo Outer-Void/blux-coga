@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "stage-*/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev]'
+          # Test-only: validates .blux/ with the Contract v1 SDK. CogA itself imports nothing from BLUX.
+          pip install "blux-sdk @ git+https://github.com/Outer-Void/blux.git@0b09a46a98a29cbdb108679f3ef5252b0b6881d1#subdirectory=sdk/python"
+      - name: Lint, types, generated files
+        run: make lint types generated
+      - name: Tests (CogA 2 engine and the frozen CogA 1.0 contract)
+        run: make test
+      - name: Regression and adversarial evaluation
+        run: make eval
+      - name: Wheel (clean venv)
+        run: make wheel
+      # The frozen 1.0 contract must still replay the dataset's fixtures byte for byte.
+      - uses: actions/checkout@v4
+        with:
+          repository: Outer-Void/blux-coga-dataset
+          ref: b3abf26b4f9a5e778119ef8634cf8a3b2d7e20db
+          path: _dataset
+      - name: blux-coga-dataset harness
+        working-directory: _dataset
+        env:
+          BLUX_COGA_BIN: blux-coga
+        run: |
+          python scripts/verify_fixtures.py
+          python scripts/run_harness.py

@@ -1,0 +1,15 @@
+{
+  "comparisons": [
+    {
+      "loser": "a",
+      "winner": "a"
+    }
+  ],
+  "contract": "coga.request",
+  "items": [
+    {
+      "id": "a"
+    }
+  ],
+  "version": 1
+}
