@@ -68,6 +68,8 @@ make ci   # ruff + mypy --strict (CogA 2), generated files current, all tests, e
 
 Python 3.10+, no runtime dependencies.
 
-## Licence
+## License
 
-BLUX Proprietary License, see [LICENSE](LICENSE).
+**BLUX Proprietary License** (proprietary). Copyright (c) 2026 Outer-Void / Justadudeinspace (JADIS). All rights reserved. See [LICENSE](LICENSE).
+
+Contact: outervoid.blux@gmail.com (main) · theoutervoid@outlook.com (fallback)
